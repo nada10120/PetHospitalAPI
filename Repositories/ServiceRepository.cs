@@ -9,13 +9,10 @@ using Repositories.IRepository;
 
 namespace Repositories
 {
-    public class PetRepository : Repository<Pet>, IPetRepository
+    public class ServiceRepository : Repository<Service>, IServiceRepository
     {
-        private readonly ApplicationDbContext context;
-        public PetRepository(ApplicationDbContext context) : base(context)
+        public ServiceRepository(ApplicationDbContext context) : base(context)
         {
-            this.context = context;
         }
-
     }
 }

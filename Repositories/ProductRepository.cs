@@ -9,7 +9,7 @@ using Repositories.IRepository;
 
 namespace Repositories
 {
-    internal class ProductRepository : Repository<Product>, IProductRepository
+    public class ProductRepository : Repository<Product>, IProductRepository
     {
         private readonly ApplicationDbContext context;
         public ProductRepository(ApplicationDbContext context) : base(context)

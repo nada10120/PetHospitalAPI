@@ -6,16 +6,12 @@ using System.Threading.Tasks;
 using DataManager;
 using Models;
 using Repositories.IRepository;
-
 namespace Repositories
 {
-    public class PetRepository : Repository<Pet>, IPetRepository
+    public class AppointmentRepository : Repository<Appointment>, IAppointmentRepository
     {
-        private readonly ApplicationDbContext context;
-        public PetRepository(ApplicationDbContext context) : base(context)
+        public AppointmentRepository(ApplicationDbContext context) : base(context)
         {
-            this.context = context;
         }
-
     }
 }

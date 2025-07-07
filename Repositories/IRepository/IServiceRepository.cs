@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DataManager;
 using Models;
 
 namespace Repositories.IRepository
 {
-    public interface IProductRepository : IRepository<Product>
+    public interface IServiceRepository : IRepository<Service>
     {
     }
 }
