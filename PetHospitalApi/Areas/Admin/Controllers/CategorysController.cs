@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Models;
-using PetHospitalApi.DTOs.Request;
-using PetHospitalApi.DTOs.Response;
+using Models.DTOs.Request;
+using Models.DTOs.Response;
 using Repositories.IRepository;
 
 namespace PetHospitalApi.Areas.Admin.Controllers
