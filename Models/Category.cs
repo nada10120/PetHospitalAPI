@@ -14,6 +14,7 @@ namespace Models
 
         // Navigation Property
         public ICollection<Product> Products { get; set; }
+        public int Id { get; set; }
     }
 
 

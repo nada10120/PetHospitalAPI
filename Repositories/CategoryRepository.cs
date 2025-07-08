@@ -16,5 +16,20 @@ namespace Repositories
         {
             this.context = context;
         }
+
+        public Task CommitAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Delete(Category category)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Update(Category category)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
