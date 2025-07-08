@@ -48,18 +48,8 @@ namespace DataManager
             modelBuilder.Entity<PostComment>()
                 .HasKey(pc => new { pc.PostId, pc.CommentId });
 
-            // PostComment relationships
-            modelBuilder.Entity<PostComment>()
-                .HasOne(pc => pc.Post)
-                .WithMany(p => p.PostComments)
-                .HasForeignKey(pc => pc.PostId)
-                .OnDelete(DeleteBehavior.NoAction);
+            
 
-            modelBuilder.Entity<PostComment>()
-                .HasOne(pc => pc.Comment)
-                .WithMany(c => c.PostComments)
-                .HasForeignKey(pc => pc.CommentId)
-                .OnDelete(DeleteBehavior.NoAction);
 
             // Composite Keys for Other Junction Tables
             modelBuilder.Entity<Like>()

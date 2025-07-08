@@ -5,6 +5,8 @@ using DataManager;
 using Scalar.AspNetCore;
 using Repositories;
 using Repositories.IRepository;
+using Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace PetHospitalApi
 {
@@ -31,9 +33,18 @@ namespace PetHospitalApi
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IPostRepository, PostRepository>();
-            builder.Services.AddScoped<IPetRepository,PetRepository>(); 
+            builder.Services.AddScoped<IPetRepository,PetRepository>();
 
-
+            builder.Services.AddIdentity<User, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+            })
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
 
 

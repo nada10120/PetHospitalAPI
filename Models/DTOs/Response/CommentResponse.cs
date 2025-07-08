@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models
+namespace Models.DTOs.Response
 {
-    public class Comment
+    public class CommentResponse
     {
-        [Key]
         public int CommentId { get; set; }
         [Required]
         public string UserId { get; set; }
@@ -18,13 +16,6 @@ namespace Models
         public string Content { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        public int PostId { get; set; } // The post this comment belongs to
-
-
-        [ForeignKey("UserId")]
-        public User User { get; set; }
-        [ForeignKey("PostId")]
-        public Post Post { get; set; } 
+        public int PostId { get; set; }
     }
-
 }

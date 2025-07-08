@@ -20,13 +20,11 @@ namespace Models
         [Required]
         public string Content { get; set; }
         public string MediaUrl { get; set; }
-        [Required]
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [ForeignKey("UserId")]
         public User User { get; set; }
         public ICollection<Comment> Comments { get; set; }
-        public ICollection<PostComment> PostComments { get; set; }
         public ICollection<Like> Likes { get; set; }
     }
 }
