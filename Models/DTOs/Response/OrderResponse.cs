@@ -22,8 +22,6 @@ namespace Models.DTOs.Response
         [Required]
         public string Status { get; set; } // Pending, Shipped, Delivered, Cancelled
 
-        // Navigation Properties
-        [ForeignKey("UserId")]
-        public User User { get; set; }
+       
     }
 }

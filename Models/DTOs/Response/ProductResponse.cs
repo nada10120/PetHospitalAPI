@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models
+namespace Models.DTOs.Response
 {
-    public class Product
+    public class ProductResponse
     {
         [Key]
         public int ProductId { get; set; }
@@ -22,11 +22,5 @@ namespace Models
         public int StockQuantity { get; set; }
         public string ImageUrl { get; set; }
 
-        // Navigation Properties
-        public ICollection<OrderItem> OrderItems { get; set; }
-        public int Id { get; set; }
     }
-
-
-
 }

@@ -33,7 +33,7 @@ namespace PetHospitalApi
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IPostRepository, PostRepository>();
-            builder.Services.AddScoped<IPetRepository,PetRepository>();
+            builder.Services.AddScoped<IVetRepository,VetRepository>();
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {

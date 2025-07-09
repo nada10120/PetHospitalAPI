@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models
+namespace Models.DTOs.Request
 {
-    public class Product
+    public class ProductRequest
     {
-        [Key]
-        public int ProductId { get; set; }
+      
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
@@ -22,11 +21,6 @@ namespace Models
         public int StockQuantity { get; set; }
         public string ImageUrl { get; set; }
 
-        // Navigation Properties
-        public ICollection<OrderItem> OrderItems { get; set; }
-        public int Id { get; set; }
     }
-
-
 
 }

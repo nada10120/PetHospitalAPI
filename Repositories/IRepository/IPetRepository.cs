@@ -8,5 +8,8 @@ namespace Repositories.IRepository
 {
     public interface IPetRepository : IRepository<Pet>
     {
+        Task CommitAsync();
+        bool Delete(Pet pet);
+        object Update(Pet pet);
     }
 }

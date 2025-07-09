@@ -10,5 +10,8 @@ namespace Repositories.IRepository
 {
     public interface IProductRepository : IRepository<Product>
     {
+        Task CommitAsync();
+        bool Delete(Product product);
+        object Update(Product product);
     }
 }
