@@ -7,6 +7,11 @@ using Repositories;
 using Repositories.IRepository;
 using Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Utility;
+using Utility.DBInitilizer;
+using ECommerce513.Utility;
+using Stripe;
 
 namespace PetHospitalApi
 {
@@ -45,7 +50,12 @@ namespace PetHospitalApi
             })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
+            builder.Services.AddScoped<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<IDBInitilizer, DBInitilizer>();
 
+            //builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+
+            //StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -61,9 +71,21 @@ namespace PetHospitalApi
 
             }
 
+
             app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             app.UseAuthorization();
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbInitializer = scope.ServiceProvider.GetRequiredService<IDBInitilizer>();
+                dbInitializer.Initilize();
+            }
+            app.MapStaticAssets();
 
 
             app.MapControllers();

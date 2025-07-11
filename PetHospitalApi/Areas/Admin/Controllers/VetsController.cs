@@ -32,9 +32,9 @@ namespace PetHospitalApi.Areas.Admin.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne([FromRoute] int id)
+        public async Task<IActionResult> GetOne([FromRoute] string id)
         {
-            var Vet = await _VetRepository.GetOneAsync(e => e.Id == id);
+            var Vet = await _VetRepository.GetOneAsync(e => e.VetId == id);
 
             if (Vet is not null)
             {
@@ -53,7 +53,7 @@ namespace PetHospitalApi.Areas.Admin.Controllers
 
             if (Vet is not null)
             {
-                return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Categories/{Vet.Id}", Vet.Adapt<VetResponse>());
+                return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Categories/{Vet.VetId}", Vet.Adapt<VetResponse>());
             }
 
             return BadRequest();
@@ -74,9 +74,9 @@ namespace PetHospitalApi.Areas.Admin.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
+        public async Task<IActionResult> Delete([FromRoute] string id)
         {
-            var Vet = await _VetRepository.GetOneAsync(e => e.Id == id);
+            var Vet = await _VetRepository.GetOneAsync(e => e.VetId == id);
 
             if (Vet is not null)
             {
