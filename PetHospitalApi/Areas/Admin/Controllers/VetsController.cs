@@ -20,8 +20,7 @@ namespace PetHospitalApi.Areas.Admin.Controllers
             _VetRepository = VetRepository;
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+      
         [HttpGet("")]
         public async Task<IActionResult> GetAll()
         {

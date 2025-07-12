@@ -25,8 +25,6 @@ namespace PetHospitalApi.Areas.Admin.Controllers
                 _OrderRepository = OrderRepository;
             }
 
-            [HttpPost]
-            [ValidateAntiForgeryToken]
             [HttpGet("")]
             public async Task<IActionResult> GetAll()
             {
