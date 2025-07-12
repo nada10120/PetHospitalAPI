@@ -9,9 +9,7 @@ namespace Models.DTOs.Response
 {
     public class CategoryResponse
     {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string? Note { get; set; }
-        public bool Status { get; set; }
+        public int CategoryId { get; set; } // Primary Key
+        public string Name { get; set; }
     }
 }

@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace Models.DTOs.Request
 {
-    public class CategoryRequest
+    public class AppointmentRequest
     {
-        public string Name { get; set; } = string.Empty;
-       
+        public string UserId { get; set; }
+        public int PetId { get; set; }
+        public string VetId { get; set; }
+        public string Status { get; set; }
     }
-
 }

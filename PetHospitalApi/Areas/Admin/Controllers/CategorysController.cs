@@ -34,7 +34,7 @@ namespace PetHospitalApi.Areas.Admin.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOne([FromRoute] int id)
         {
-            var category = await _categoryRepository.GetOneAsync(e => e.Id == id);
+            var category = await _categoryRepository.GetOneAsync(e => e.CategoryId == id);
 
             if (category is not null)
             {
@@ -49,11 +49,10 @@ namespace PetHospitalApi.Areas.Admin.Controllers
         public async Task<IActionResult> Create([FromBody] CategoryRequest categoryRequest)
         {
             var category = await _categoryRepository.CreateAsync(categoryRequest.Adapt<Category>());
-            await _categoryRepository.CommitAsync();
 
             if (category is not null)
             {
-                return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Categories/{category.Id}", category.Adapt<CategoryResponse>());
+                return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Categories/{category.CategoryId}", category.Adapt<CategoryResponse>());
             }
 
             return BadRequest();
@@ -62,8 +61,13 @@ namespace PetHospitalApi.Areas.Admin.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit([FromRoute] int id, [FromBody] CategoryRequest categoryRequest)
         {
-            var category = _categoryRepository.Update(categoryRequest.Adapt<Category>());
-            await _categoryRepository.CommitAsync();
+            var existingCategory = await _categoryRepository.GetOneAsync(e => e.CategoryId == id);
+            if (existingCategory is null)
+            {
+                return NotFound();
+            }
+            existingCategory.Name = categoryRequest.Name;
+            var category =await _categoryRepository.EditAsync(existingCategory);
 
             if (category is not null)
             {
@@ -76,19 +80,15 @@ namespace PetHospitalApi.Areas.Admin.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var category = await _categoryRepository.GetOneAsync(e => e.Id == id);
+            var category = await _categoryRepository.GetOneAsync(e => e.CategoryId == id);
 
             if (category is not null)
             {
-                var result = _categoryRepository.Delete(category);
-                await _categoryRepository.CommitAsync();
+                var result = await  _categoryRepository.DeleteAsync(category);
 
-                if (result)
-                {
+                
+                
                     return NoContent();
-                }
-
-                return BadRequest();
             }
 
             return NotFound();
