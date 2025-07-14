@@ -28,7 +28,7 @@ namespace Models
         [ForeignKey("UserId")]
         public User User { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
-        public int Id { get; set; }
+      
     }
 
 
