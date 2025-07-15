@@ -20,83 +20,80 @@ namespace PetHospitalApi.Areas.Admin.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IOrderRepository _orderRepository;
-     
+        private readonly UserManager<User> _userManager;
 
-        public OrdersController(IOrderRepository orderRepository)
+        public OrdersController(IOrderRepository orderRepository , UserManager<User> userManager)
         {
             _orderRepository = orderRepository;
+            _userManager = userManager;
         }
-        [HttpGet("")]
-        public async Task<IActionResult> GetAll()
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllOrders()
         {
-            var order = await _orderRepository.GetAsync();
-
-
-            return Ok(order.Adapt<IEnumerable<OrderResponse>>());
+            var orders = await _orderRepository.GetAsync();
+            if (orders == null )
+            {
+                return NotFound("No orders found.");
+            }
+            return Ok(orders.Adapt<IEnumerable<OrderResponse>>());
         }
-
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne([FromRoute] int id)
+        public async Task<IActionResult> GetOrderById([FromRoute] int id)
         {
-            var Order = await _orderRepository.GetOneAsync(e => e.OrderId == id);
-
-            if (Order is not null)
+            var order = await _orderRepository.GetOneAsync(e => e.OrderId == id);
+            if (order == null)
             {
-
-                return Ok(Order.Adapt<OrderResponse>());
+                return NotFound($"Order with ID {id} not found.");
             }
-
-            return NotFound();
+            return Ok(order.Adapt<OrderResponse>());
         }
-
-        [HttpPost("")]
-        public async Task<IActionResult> Create([FromBody] OrderRequest OrderRequest)
+        [HttpPost]
+        public async Task<IActionResult> CreateOrder([FromBody] OrderRequest orderRequest)
         {
-            var Order = await _orderRepository.CreateAsync(OrderRequest.Adapt<Order>());
-
-            if (Order is not null)
+            if (orderRequest == null)
+                return BadRequest("Order data is null.");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var user = await _userManager.FindByIdAsync(orderRequest.UserId);
+            if (user == null)
             {
-                return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Categories/{Order.OrderId}", Order.Adapt<OrderResponse>());
-            }
+                return BadRequest("Invalid user");
 
-            return BadRequest();
+            }
+            var order = orderRequest.Adapt<Order>();
+            await _orderRepository.CreateAsync(order);
+            return CreatedAtAction(nameof(GetOrderById), new { id = order.OrderId }, order.Adapt<OrderResponse>());
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit([FromRoute] int id, [FromBody] OrderRequest OrderRequest)
+        public async Task<IActionResult> UpdateOrder([FromRoute] int id, [FromBody] OrderRequest orderRequest)
         {
-            var existingOrder = await _orderRepository.GetOneAsync(e => e.OrderId == id);
-            if (existingOrder is null)
+            if (orderRequest == null)
+                return BadRequest("Order data is null.");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var order = await _orderRepository.GetOneAsync(e => e.OrderId == id);
+            if (order == null)
             {
-                return NotFound();
+                return NotFound($"Order with ID {id} not found.");
             }
-            existingOrder.Name = OrderRequest.Name;
-            var Order = await _orderRepository.EditAsync(existingOrder);
-
-            if (Order is not null)
-            {
-                return NoContent();
-            }
-
-            return BadRequest();
+            order = orderRequest.Adapt(order);
+            await _orderRepository.EditAsync(order);
+            return Ok(order.Adapt<OrderResponse>());
         }
-
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
+        public async Task<IActionResult> DeleteOrder([FromRoute] int id)
         {
-            var Order = await _orderRepository.GetOneAsync(e => e.OrderId == id);
-
-            if (Order is not null)
+            var order = await _orderRepository.GetOneAsync(e => e.OrderId == id);
+            if (order == null)
             {
-                var result = await _orderRepository.DeleteAsync(Order);
-
-
-
-                return NoContent();
+                return NotFound($"Order with ID {id} not found.");
             }
-
-            return NotFound();
+            await _orderRepository.DeleteAsync(order);
+            return NoContent();
         }
     }
+
 }
 
