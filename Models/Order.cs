@@ -12,6 +12,7 @@ namespace Models
 
     public class Order
     {
+        public string Name { get; set; }
         [Key]
         public int OrderId { get; set; }
         [Required]
