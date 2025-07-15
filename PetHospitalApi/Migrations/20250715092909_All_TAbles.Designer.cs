@@ -12,910 +12,922 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace PetHospitalApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-<<<<<<<< HEAD:PetHospitalApi/Migrations/20250715174921_AddData.Designer.cs
     [Migration("20250715174921_AddData")]
     partial class AddData
-========
-    [Migration("20250715092909_All_TAbles")]
-    partial class All_TAbles
->>>>>>>> 3d6975ec877b2f96f82fbced73ebf5dff70967e7:PetHospitalApi/Migrations/20250715092909_All_TAbles.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        { }
+
+        [Migration("20250715092909_All_TAbles")]
+
+        partial class All_TAbles : Migration
         {
-#pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.5")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
-
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+            /// <inheritdoc />
+            protected override void BuildTargetModel(ModelBuilder modelBuilder)
+            {
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                    modelBuilder
+                        .HasAnnotation("ProductVersion", "9.0.5")
+                        .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                    SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                        {
+                            b.Property<string>("Id")
+                                .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                            b.Property<string>("ConcurrencyStamp")
+                                .IsConcurrencyToken()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                            b.Property<string>("Name")
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
-                    b.ToTable("AspNetRoles", (string)null);
-                });
+                            b.Property<string>("NormalizedName")
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                            b.HasKey("Id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                            b.HasIndex("NormalizedName")
+                                .IsUnique()
+                                .HasDatabaseName("RoleNameIndex")
+                                .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                            b.ToTable("AspNetRoles", (string)null);
+                        });
 
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                        {
+                            b.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.HasKey("Id");
+                            b.Property<string>("ClaimType")
+                                .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("RoleId");
+                            b.Property<string>("ClaimValue")
+                                .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
-                });
+                            b.Property<string>("RoleId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(450)");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                            b.HasKey("Id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                            b.HasIndex("RoleId");
 
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                            b.ToTable("AspNetRoleClaims", (string)null);
+                        });
 
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                        {
+                            b.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.HasKey("Id");
+                            b.Property<string>("ClaimType")
+                                .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("UserId");
+                            b.Property<string>("ClaimValue")
+                                .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
+                            b.Property<string>("UserId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(450)");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                            b.HasKey("Id");
 
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                            b.HasIndex("UserId");
 
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
+                            b.ToTable("AspNetUserClaims", (string)null);
+                        });
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                        {
+                            b.Property<string>("LoginProvider")
+                                .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("LoginProvider", "ProviderKey");
+                            b.Property<string>("ProviderKey")
+                                .HasColumnType("nvarchar(450)");
 
-                    b.HasIndex("UserId");
+                            b.Property<string>("ProviderDisplayName")
+                                .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
+                            b.Property<string>("UserId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(450)");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                            b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
+                            b.HasIndex("UserId");
 
-                    b.HasKey("UserId", "RoleId");
+                            b.ToTable("AspNetUserLogins", (string)null);
+                        });
 
-                    b.HasIndex("RoleId");
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                        {
+                            b.Property<string>("UserId")
+                                .HasColumnType("nvarchar(450)");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
-                });
+                            b.Property<string>("RoleId")
+                                .HasColumnType("nvarchar(450)");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                            b.HasKey("UserId", "RoleId");
 
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                            b.HasIndex("RoleId");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                            b.ToTable("AspNetUserRoles", (string)null);
+                        });
 
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                        {
+                            b.Property<string>("UserId")
+                                .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("UserId", "LoginProvider", "Name");
+                            b.Property<string>("LoginProvider")
+                                .HasColumnType("nvarchar(450)");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
-                });
+                            b.Property<string>("Name")
+                                .HasColumnType("nvarchar(450)");
 
-            modelBuilder.Entity("Models.Appointment", b =>
-                {
-                    b.Property<int>("AppointmentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                            b.Property<string>("Value")
+                                .HasColumnType("nvarchar(max)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentId"));
+                            b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                            b.ToTable("AspNetUserTokens", (string)null);
+                        });
 
-                    b.Property<int>("PetId")
-                        .HasColumnType("int");
+                    modelBuilder.Entity("Models.Appointment", b =>
+                        {
+                            b.Property<int>("AppointmentId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentId"));
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                            b.Property<DateTime>("DateTime")
+                                .HasColumnType("datetime2");
 
-                    b.Property<string>("VetId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                            b.Property<int>("PetId")
+                                .HasColumnType("int");
 
-                    b.HasKey("AppointmentId");
+                            b.Property<string>("Status")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("PetId");
+                            b.Property<string>("UserId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(450)");
 
-                    b.HasIndex("UserId");
+                            b.Property<string>("VetId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(450)");
 
-                    b.HasIndex("VetId");
+                            b.HasKey("AppointmentId");
 
-                    b.ToTable("Appointments");
-                });
+                            b.HasIndex("PetId");
 
-            modelBuilder.Entity("Models.AppointmentService", b =>
-                {
-                    b.Property<int>("AppointmentId")
-                        .HasColumnType("int");
+                            b.HasIndex("UserId");
 
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("int");
+                            b.HasIndex("VetId");
 
-                    b.Property<int>("AppointmentServiceId")
-                        .HasColumnType("int");
+                            b.ToTable("Appointments");
+                        });
 
-                    b.HasKey("AppointmentId", "ServiceId");
+                    modelBuilder.Entity("Models.AppointmentService", b =>
+                        {
+                            b.Property<int>("AppointmentId")
+                                .HasColumnType("int");
 
-                    b.HasIndex("ServiceId");
+                            b.Property<int>("ServiceId")
+                                .HasColumnType("int");
 
-                    b.ToTable("AppointmentsService");
-                });
+                            b.Property<int>("AppointmentServiceId")
+                                .HasColumnType("int");
 
-            modelBuilder.Entity("Models.Category", b =>
-                {
-                    b.Property<int>("CategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                            b.HasKey("AppointmentId", "ServiceId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
+                            b.HasIndex("ServiceId");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            b.ToTable("AppointmentsService");
+                        });
 
-                    b.HasKey("CategoryId");
+                    modelBuilder.Entity("Models.Category", b =>
+                        {
+                            b.Property<int>("CategoryId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
 
-                    b.ToTable("Categories");
-                });
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
 
-            modelBuilder.Entity("Models.Comment", b =>
-                {
-                    b.Property<int>("CommentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                            b.Property<string>("Name")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CommentId"));
+                            b.HasKey("CategoryId");
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            b.ToTable("Categories");
+                        });
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                    modelBuilder.Entity("Models.Comment", b =>
+                        {
+                            b.Property<int>("CommentId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
 
-                    b.Property<int>("PostId")
-                        .HasColumnType("int");
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CommentId"));
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                            b.Property<string>("Content")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CommentId");
+                            b.Property<DateTime>("CreatedAt")
+                                .HasColumnType("datetime2");
 
-                    b.HasIndex("PostId");
+                            b.Property<int>("PostId")
+                                .HasColumnType("int");
 
-                    b.HasIndex("UserId");
+                            b.Property<string>("UserId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(450)");
 
-                    b.ToTable("Comments");
-                });
+                            b.HasKey("CommentId");
 
-            modelBuilder.Entity("Models.Like", b =>
-                {
-                    b.Property<int>("PostId")
-                        .HasColumnType("int");
+                            b.HasIndex("PostId");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                            b.HasIndex("UserId");
 
-                    b.Property<int>("PostLikeId")
-                        .HasColumnType("int");
+                            b.ToTable("Comments");
+                        });
 
-                    b.HasKey("PostId", "UserId");
+                    modelBuilder.Entity("Models.Like", b =>
+                        {
+                            b.Property<int>("PostId")
+                                .HasColumnType("int");
 
-                    b.HasIndex("UserId");
+                            b.Property<string>("UserId")
+                                .HasColumnType("nvarchar(450)");
 
-                    b.ToTable("Likes");
-                });
+                            b.Property<int>("PostLikeId")
+                                .HasColumnType("int");
 
-            modelBuilder.Entity("Models.Order", b =>
-                {
-                    b.Property<int>("OrderId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                            b.HasKey("PostId", "UserId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
+                            b.HasIndex("UserId");
 
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
+                            b.ToTable("Likes");
+                        });
 
-                    b.Property<string>("ShippingAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    modelBuilder.Entity("Models.Order", b =>
+                        {
+                            b.Property<int>("OrderId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
-                    b.Property<double>("TotalAmount")
-                        .HasColumnType("float");
+                            b.Property<DateTime>("OrderDate")
+                                .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                            b.Property<string>("ShippingAddress")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("OrderId");
+                            b.Property<string>("Status")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("UserId");
+                            b.Property<double>("TotalAmount")
+                                .HasColumnType("float");
 
-                    b.ToTable("Orders");
-                });
+                            b.Property<string>("UserId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(450)");
 
-            modelBuilder.Entity("Models.OrderItem", b =>
-                {
-                    b.Property<int>("OrderItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                            b.HasKey("OrderId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderItemId"));
+                            b.HasIndex("UserId");
 
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
+                            b.ToTable("Orders");
+                        });
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
+                    modelBuilder.Entity("Models.OrderItem", b =>
+                        {
+                            b.Property<int>("OrderItemId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderItemId"));
 
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
+                            b.Property<int>("OrderId")
+                                .HasColumnType("int");
 
-                    b.HasKey("OrderItemId");
+                            b.Property<int>("ProductId")
+                                .HasColumnType("int");
 
-                    b.HasIndex("OrderId");
+                            b.Property<int>("Quantity")
+                                .HasColumnType("int");
 
-                    b.HasIndex("ProductId");
+                            b.Property<decimal>("UnitPrice")
+                                .HasColumnType("decimal(18,2)");
 
-                    b.ToTable("OrderItems");
-                });
+                            b.HasKey("OrderItemId");
 
-            modelBuilder.Entity("Models.Pet", b =>
-                {
-                    b.Property<int>("PetId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                            b.HasIndex("OrderId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PetId"));
+                            b.HasIndex("ProductId");
 
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
+                            b.ToTable("OrderItems");
+                        });
 
-                    b.Property<string>("Breed")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    modelBuilder.Entity("Models.Pet", b =>
+                        {
+                            b.Property<int>("PetId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
 
-                    b.Property<string>("MedicalHistory")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PetId"));
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            b.Property<int>("Age")
+                                .HasColumnType("int");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            b.Property<string>("Breed")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                            b.Property<string>("MedicalHistory")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("PetId");
+                            b.Property<string>("Name")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("UserId");
+                            b.Property<string>("Type")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("Pets");
-                });
+                            b.Property<string>("UserId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(450)");
 
-            modelBuilder.Entity("Models.PetService", b =>
-                {
-                    b.Property<int>("PetId")
-                        .HasColumnType("int");
+                            b.HasKey("PetId");
 
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("int");
+                            b.HasIndex("UserId");
 
-                    b.Property<DateTime>("DatePerformed")
-                        .HasColumnType("datetime2");
+                            b.ToTable("Pets");
+                        });
 
-                    b.Property<int>("PetServiceId")
-                        .HasColumnType("int");
+                    modelBuilder.Entity("Models.PetService", b =>
+                        {
+                            b.Property<int>("PetId")
+                                .HasColumnType("int");
 
-                    b.HasKey("PetId", "ServiceId");
+                            b.Property<int>("ServiceId")
+                                .HasColumnType("int");
 
-                    b.HasIndex("ServiceId");
+                            b.Property<DateTime>("DatePerformed")
+                                .HasColumnType("datetime2");
 
-                    b.ToTable("PetsService");
-                });
+                            b.Property<int>("PetServiceId")
+                                .HasColumnType("int");
 
-            modelBuilder.Entity("Models.Post", b =>
-                {
-                    b.Property<int>("PostId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                            b.HasKey("PetId", "ServiceId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PostId"));
+                            b.HasIndex("ServiceId");
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            b.ToTable("PetsService");
+                        });
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                    modelBuilder.Entity("Models.Post", b =>
+                        {
+                            b.Property<int>("PostId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
 
-                    b.Property<string>("MediaUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PostId"));
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                            b.Property<string>("Content")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("PostId");
+                            b.Property<DateTime>("CreatedAt")
+                                .HasColumnType("datetime2");
 
-                    b.HasIndex("UserId");
+                            b.Property<string>("MediaUrl")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("Posts");
-                });
+                            b.Property<string>("UserId")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(450)");
 
-            modelBuilder.Entity("Models.PostComment", b =>
-                {
-                    b.Property<int>("PostId")
-                        .HasColumnType("int");
+                            b.HasKey("PostId");
 
-                    b.Property<int>("CommentId")
-                        .HasColumnType("int");
+                            b.HasIndex("UserId");
 
-                    b.HasKey("PostId", "CommentId");
+                            b.ToTable("Posts");
+                        });
 
-                    b.HasIndex("CommentId");
+                    modelBuilder.Entity("Models.PostComment", b =>
+                        {
+                            b.Property<int>("PostId")
+                                .HasColumnType("int");
 
-                    b.ToTable("PostComments");
-                });
+                            b.Property<int>("CommentId")
+                                .HasColumnType("int");
 
-            modelBuilder.Entity("Models.Product", b =>
-                {
-                    b.Property<int>("ProductId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                            b.HasKey("PostId", "CommentId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"));
+                            b.HasIndex("CommentId");
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            b.ToTable("PostComments");
+                        });
 
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
+                    modelBuilder.Entity("Models.Product", b =>
+                        {
+                            b.Property<int>("ProductId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"));
 
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            b.Property<string>("Category")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            b.Property<int?>("CategoryId")
+                                .HasColumnType("int");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                            b.Property<string>("Description")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("StockQuantity")
-                        .HasColumnType("int");
+                            b.Property<string>("ImageUrl")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ProductId");
+                            b.Property<string>("Name")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("CategoryId");
+                            b.Property<decimal>("Price")
+                                .HasColumnType("decimal(18,2)");
 
-                    b.ToTable("Products");
-                });
+                            b.Property<int>("StockQuantity")
+                                .HasColumnType("int");
 
-            modelBuilder.Entity("Models.Service", b =>
-                {
-                    b.Property<int>("ServiceId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                            b.HasKey("ProductId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ServiceId"));
+                            b.HasIndex("CategoryId");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            b.ToTable("Products");
+                        });
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    modelBuilder.Entity("Models.Service", b =>
+                        {
+                            b.Property<int>("ServiceId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ServiceId"));
 
-                    b.HasKey("ServiceId");
+                            b.Property<string>("Description")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("Services");
-                });
+                            b.Property<string>("Name")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-            modelBuilder.Entity("Models.User", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                            b.Property<decimal>("Price")
+                                .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                            b.HasKey("ServiceId");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            b.ToTable("Services");
+                        });
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                    modelBuilder.Entity("Models.User", b =>
+                        {
+                            b.Property<string>("Id")
+                                .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                            b.Property<int>("AccessFailedCount")
+                                .HasColumnType("int");
 
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
+                            b.Property<string>("Address")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
+                            b.Property<string>("ConcurrencyStamp")
+                                .IsConcurrencyToken()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
+                            b.Property<string>("Email")
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                            b.Property<bool>("EmailConfirmed")
+                                .HasColumnType("bit");
 
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                            b.Property<bool>("LockoutEnabled")
+                                .HasColumnType("bit");
 
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
+                            b.Property<DateTimeOffset?>("LockoutEnd")
+                                .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                            b.Property<string>("NormalizedEmail")
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
+                            b.Property<string>("NormalizedUserName")
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("ProfilePicture")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            b.Property<string>("PasswordHash")
+                                .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            b.Property<string>("PhoneNumber")
+                                .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
+                            b.Property<bool>("PhoneNumberConfirmed")
+                                .HasColumnType("bit");
 
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
+                            b.Property<string>("ProfilePicture")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                            b.Property<string>("Role")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                            b.Property<string>("SecurityStamp")
+                                .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
+                            b.Property<bool>("TwoFactorEnabled")
+                                .HasColumnType("bit");
 
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                            b.Property<string>("UserName")
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
-                    b.ToTable("AspNetUsers", (string)null);
-                });
+                            b.HasKey("Id");
 
-            modelBuilder.Entity("Models.Vet", b =>
-                {
-                    b.Property<string>("VetId")
-                        .HasColumnType("nvarchar(450)");
+                            b.HasIndex("NormalizedEmail")
+                                .HasDatabaseName("EmailIndex");
 
-                    b.Property<string>("AvailabilitySchedule")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            b.HasIndex("NormalizedUserName")
+                                .IsUnique()
+                                .HasDatabaseName("UserNameIndex")
+                                .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.Property<string>("Specialization")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                            b.ToTable("AspNetUsers", (string)null);
+                        });
 
-                    b.HasKey("VetId");
+                    modelBuilder.Entity("Models.Vet", b =>
+                        {
+                            b.Property<string>("VetId")
+                                .HasColumnType("nvarchar(450)");
 
-                    b.ToTable("Vets");
-                });
+                            b.Property<string>("AvailabilitySchedule")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                            b.Property<string>("Specialization")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.HasOne("Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                            b.HasKey("VetId");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.HasOne("Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                            b.ToTable("Vets");
+                        });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                        {
+                            b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                                .WithMany()
+                                .HasForeignKey("RoleId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-                    b.HasOne("Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                        {
+                            b.HasOne("Models.User", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.HasOne("Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                        {
+                            b.HasOne("Models.User", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-            modelBuilder.Entity("Models.Appointment", b =>
-                {
-                    b.HasOne("Models.Pet", "Pet")
-                        .WithMany("Appointments")
-                        .HasForeignKey("PetId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                        {
+                            b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                                .WithMany()
+                                .HasForeignKey("RoleId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
 
-                    b.HasOne("Models.User", "User")
-                        .WithMany("Appointments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                            b.HasOne("Models.User", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-                    b.HasOne("Models.Vet", "Vet")
-                        .WithMany("Appointments")
-                        .HasForeignKey("VetId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                    modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                        {
+                            b.HasOne("Models.User", null)
+                                .WithMany()
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
 
-                    b.Navigation("Pet");
+                    modelBuilder.Entity("Models.Appointment", b =>
+                        {
+                            b.HasOne("Models.Pet", "Pet")
+                                .WithMany("Appointments")
+                                .HasForeignKey("PetId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-                    b.Navigation("User");
+                            b.HasOne("Models.User", "User")
+                                .WithMany("Appointments")
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-                    b.Navigation("Vet");
-                });
+                            b.HasOne("Models.Vet", "Vet")
+                                .WithMany("Appointments")
+                                .HasForeignKey("VetId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-            modelBuilder.Entity("Models.AppointmentService", b =>
-                {
-                    b.HasOne("Models.Appointment", "Appointment")
-                        .WithMany("AppointmentServices")
-                        .HasForeignKey("AppointmentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                            b.Navigation("Pet");
 
-                    b.HasOne("Models.Service", "Service")
-                        .WithMany("AppointmentServices")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                            b.Navigation("User");
 
-                    b.Navigation("Appointment");
+                            b.Navigation("Vet");
+                        });
 
-                    b.Navigation("Service");
-                });
+                    modelBuilder.Entity("Models.AppointmentService", b =>
+                        {
+                            b.HasOne("Models.Appointment", "Appointment")
+                                .WithMany("AppointmentServices")
+                                .HasForeignKey("AppointmentId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-            modelBuilder.Entity("Models.Comment", b =>
-                {
-                    b.HasOne("Models.Post", "Post")
-                        .WithMany("Comments")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                            b.HasOne("Models.Service", "Service")
+                                .WithMany("AppointmentServices")
+                                .HasForeignKey("ServiceId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-                    b.HasOne("Models.User", "User")
-                        .WithMany("Comments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                            b.Navigation("Appointment");
 
-                    b.Navigation("Post");
+                            b.Navigation("Service");
+                        });
 
-                    b.Navigation("User");
-                });
+                    modelBuilder.Entity("Models.Comment", b =>
+                        {
+                            b.HasOne("Models.Post", "Post")
+                                .WithMany("Comments")
+                                .HasForeignKey("PostId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-            modelBuilder.Entity("Models.Like", b =>
-                {
-                    b.HasOne("Models.Post", "Post")
-                        .WithMany("Likes")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                            b.HasOne("Models.User", "User")
+                                .WithMany("Comments")
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-                    b.HasOne("Models.User", "User")
-                        .WithMany("Likes")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                            b.Navigation("Post");
 
-                    b.Navigation("Post");
+                            b.Navigation("User");
+                        });
 
-                    b.Navigation("User");
-                });
+                    modelBuilder.Entity("Models.Like", b =>
+                        {
+                            b.HasOne("Models.Post", "Post")
+                                .WithMany("Likes")
+                                .HasForeignKey("PostId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-            modelBuilder.Entity("Models.Order", b =>
-                {
-                    b.HasOne("Models.User", "User")
-                        .WithMany("Orders")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                            b.HasOne("Models.User", "User")
+                                .WithMany("Likes")
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-                    b.Navigation("User");
-                });
+                            b.Navigation("Post");
 
-            modelBuilder.Entity("Models.OrderItem", b =>
-                {
-                    b.HasOne("Models.Order", "Order")
-                        .WithMany("OrderItems")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                            b.Navigation("User");
+                        });
 
-                    b.HasOne("Models.Product", "Product")
-                        .WithMany("OrderItems")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                    modelBuilder.Entity("Models.Order", b =>
+                        {
+                            b.HasOne("Models.User", "User")
+                                .WithMany("Orders")
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-                    b.Navigation("Order");
+                            b.Navigation("User");
+                        });
 
-                    b.Navigation("Product");
-                });
+                    modelBuilder.Entity("Models.OrderItem", b =>
+                        {
+                            b.HasOne("Models.Order", "Order")
+                                .WithMany("OrderItems")
+                                .HasForeignKey("OrderId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-            modelBuilder.Entity("Models.Pet", b =>
-                {
-                    b.HasOne("Models.User", "User")
-                        .WithMany("Pets")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                            b.HasOne("Models.Product", "Product")
+                                .WithMany("OrderItems")
+                                .HasForeignKey("ProductId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-                    b.Navigation("User");
-                });
+                            b.Navigation("Order");
 
-            modelBuilder.Entity("Models.PetService", b =>
-                {
-                    b.HasOne("Models.Pet", "Pet")
-                        .WithMany("PetServices")
-                        .HasForeignKey("PetId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                            b.Navigation("Product");
+                        });
 
-                    b.HasOne("Models.Service", "Service")
-                        .WithMany("PetServices")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                    modelBuilder.Entity("Models.Pet", b =>
+                        {
+                            b.HasOne("Models.User", "User")
+                                .WithMany("Pets")
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-                    b.Navigation("Pet");
+                            b.Navigation("User");
+                        });
 
-                    b.Navigation("Service");
-                });
+                    modelBuilder.Entity("Models.PetService", b =>
+                        {
+                            b.HasOne("Models.Pet", "Pet")
+                                .WithMany("PetServices")
+                                .HasForeignKey("PetId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-            modelBuilder.Entity("Models.Post", b =>
-                {
-                    b.HasOne("Models.User", "User")
-                        .WithMany("Posts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                            b.HasOne("Models.Service", "Service")
+                                .WithMany("PetServices")
+                                .HasForeignKey("ServiceId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-                    b.Navigation("User");
-                });
+                            b.Navigation("Pet");
 
-            modelBuilder.Entity("Models.PostComment", b =>
-                {
-                    b.HasOne("Models.Comment", "Comment")
-                        .WithMany()
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                            b.Navigation("Service");
+                        });
 
-                    b.HasOne("Models.Post", "Post")
-                        .WithMany()
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    modelBuilder.Entity("Models.Post", b =>
+                        {
+                            b.HasOne("Models.User", "User")
+                                .WithMany("Posts")
+                                .HasForeignKey("UserId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-                    b.Navigation("Comment");
+                            b.Navigation("User");
+                        });
 
-                    b.Navigation("Post");
-                });
+                    modelBuilder.Entity("Models.PostComment", b =>
+                        {
+                            b.HasOne("Models.Comment", "Comment")
+                                .WithMany()
+                                .HasForeignKey("CommentId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
 
-            modelBuilder.Entity("Models.Product", b =>
-                {
-                    b.HasOne("Models.Category", null)
-                        .WithMany("Products")
-                        .HasForeignKey("CategoryId");
-                });
+                            b.HasOne("Models.Post", "Post")
+                                .WithMany()
+                                .HasForeignKey("PostId")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
 
-            modelBuilder.Entity("Models.Vet", b =>
-                {
-                    b.HasOne("Models.User", "User")
-                        .WithOne("Vet")
-                        .HasForeignKey("Models.Vet", "VetId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                            b.Navigation("Comment");
 
-                    b.Navigation("User");
-                });
+                            b.Navigation("Post");
+                        });
 
-            modelBuilder.Entity("Models.Appointment", b =>
-                {
-                    b.Navigation("AppointmentServices");
-                });
+                    modelBuilder.Entity("Models.Product", b =>
+                        {
+                            b.HasOne("Models.Category", null)
+                                .WithMany("Products")
+                                .HasForeignKey("CategoryId");
+                        });
 
-            modelBuilder.Entity("Models.Category", b =>
-                {
-                    b.Navigation("Products");
-                });
+                    modelBuilder.Entity("Models.Vet", b =>
+                        {
+                            b.HasOne("Models.User", "User")
+                                .WithOne("Vet")
+                                .HasForeignKey("Models.Vet", "VetId")
+                                .OnDelete(DeleteBehavior.NoAction)
+                                .IsRequired();
 
-            modelBuilder.Entity("Models.Order", b =>
-                {
-                    b.Navigation("OrderItems");
-                });
+                            b.Navigation("User");
+                        });
 
-            modelBuilder.Entity("Models.Pet", b =>
-                {
-                    b.Navigation("Appointments");
+                    modelBuilder.Entity("Models.Appointment", b =>
+                        {
+                            b.Navigation("AppointmentServices");
+                        });
 
-                    b.Navigation("PetServices");
-                });
+                    modelBuilder.Entity("Models.Category", b =>
+                        {
+                            b.Navigation("Products");
+                        });
 
-            modelBuilder.Entity("Models.Post", b =>
-                {
-                    b.Navigation("Comments");
+                    modelBuilder.Entity("Models.Order", b =>
+                        {
+                            b.Navigation("OrderItems");
+                        });
 
-                    b.Navigation("Likes");
-                });
+                    modelBuilder.Entity("Models.Pet", b =>
+                        {
+                            b.Navigation("Appointments");
 
-            modelBuilder.Entity("Models.Product", b =>
-                {
-                    b.Navigation("OrderItems");
-                });
+                            b.Navigation("PetServices");
+                        });
 
-            modelBuilder.Entity("Models.Service", b =>
-                {
-                    b.Navigation("AppointmentServices");
+                    modelBuilder.Entity("Models.Post", b =>
+                        {
+                            b.Navigation("Comments");
 
-                    b.Navigation("PetServices");
-                });
+                            b.Navigation("Likes");
+                        });
 
-            modelBuilder.Entity("Models.User", b =>
-                {
-                    b.Navigation("Appointments");
+                    modelBuilder.Entity("Models.Product", b =>
+                        {
+                            b.Navigation("OrderItems");
+                        });
 
-                    b.Navigation("Comments");
+                    modelBuilder.Entity("Models.Service", b =>
+                        {
+                            b.Navigation("AppointmentServices");
 
-                    b.Navigation("Likes");
+                            b.Navigation("PetServices");
+                        });
 
-                    b.Navigation("Orders");
+                    modelBuilder.Entity("Models.User", b =>
+                        {
+                            b.Navigation("Appointments");
 
-                    b.Navigation("Pets");
+                            b.Navigation("Comments");
 
-                    b.Navigation("Posts");
+                            b.Navigation("Likes");
 
-                    b.Navigation("Vet")
-                        .IsRequired();
-                });
+                            b.Navigation("Orders");
 
-            modelBuilder.Entity("Models.Vet", b =>
-                {
-                    b.Navigation("Appointments");
-                });
+                            b.Navigation("Pets");
+
+                            b.Navigation("Posts");
+
+                            b.Navigation("Vet")
+                                .IsRequired();
+                        });
+
+                    modelBuilder.Entity("Models.Vet", b =>
+                        {
+                            b.Navigation("Appointments");
+                        });
 #pragma warning restore 612, 618
+                }
+            }
+
+            protected override void Up(MigrationBuilder migrationBuilder)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }
+

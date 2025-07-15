@@ -12,13 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace PetHospitalApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-<<<<<<<< HEAD:PetHospitalApi/Migrations/20250715174921_AddData.Designer.cs
-    [Migration("20250715174921_AddData")]
-    partial class AddData
-========
+   
+
     [Migration("20250715092909_All_TAbles")]
     partial class All_TAbles
->>>>>>>> 3d6975ec877b2f96f82fbced73ebf5dff70967e7:PetHospitalApi/Migrations/20250715092909_All_TAbles.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
