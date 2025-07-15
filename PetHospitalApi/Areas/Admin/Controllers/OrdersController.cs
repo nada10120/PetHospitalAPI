@@ -31,25 +31,30 @@ namespace PetHospitalApi.Areas.Admin.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne(int id)
+        public async Task<IActionResult> GetOne([FromRoute] int id)
         {
-            var order = await _orderRepository.GetOneAsync(e => e.OrderId == id);
-            if (order is not null)
+            var Order = await _orderRepository.GetOneAsync(e => e.OrderId == id);
+
+            if (Order is not null)
             {
-                return Ok(order.Adapt<OrderResponse>());
+
+                return Ok(Order.Adapt<OrderResponse>());
             }
+
             return NotFound();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] OrderRequest orderRequest)
+        [HttpPost("")]
+        public async Task<IActionResult> Create([FromBody] OrderRequest OrderRequest)
         {
-            if (!ModelState.IsValid)
+            var Order = await _orderRepository.CreateAsync(OrderRequest.Adapt<Order>());
+
+            if (Order is not null)
             {
-                return BadRequest(ModelState);
+                return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Categories/{Order.OrderId}", Order.Adapt<OrderResponse>());
             }
 
-            var user = await _userManager.FindByIdAsync(orderRequest.UserId);
+            var user = await _userManager.FindByIdAsync(OrderRequest.UserId);
             if (user is null)
             {
                 return BadRequest("Invalid UserId: User does not exist.");
@@ -57,11 +62,11 @@ namespace PetHospitalApi.Areas.Admin.Controllers
 
             var order = new Order
             {
-                UserId = orderRequest.UserId,
+                UserId = OrderRequest.UserId,
                 OrderDate = DateTime.UtcNow,
-                TotalAmount = orderRequest.TotalAmount,
-                ShippingAddress = orderRequest.ShippingAddress ?? "Default Address",
-                Status = orderRequest.Status ?? "Pending"
+                TotalAmount = OrderRequest.TotalAmount,
+                ShippingAddress = OrderRequest.ShippingAddress ?? "Default Address",
+                Status = OrderRequest.Status ?? "Pending"
             };
 
             var createdOrder = await _orderRepository.CreateAsync(order);
@@ -75,37 +80,35 @@ namespace PetHospitalApi.Areas.Admin.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromBody] OrderRequest orderRequest)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+                var Order = await _orderRepository.GetOneAsync(e => e.OrderId == id);
 
-            var user = await _userManager.FindByIdAsync(orderRequest.UserId);
-            if (user is null)
-            {
-                return BadRequest("Invalid UserId: User does not exist.");
-            }
+                var user = await _userManager.FindByIdAsync(orderRequest.UserId);
+                if (user is null)
+                {
+                    return BadRequest("Invalid UserId: User does not exist.");
+                }
 
-            var updatedOrder = orderRequest.Adapt<Order>();
-            updatedOrder.OrderId = id;
-            var result = await _orderRepository.EditAsync(updatedOrder);
-            if (result is not null)
-            {
-                return NoContent();
-            }
-            return BadRequest("Failed to update order. Check server logs for details.");
+                var updatedOrder = orderRequest.Adapt<Order>();
+                updatedOrder.OrderId = id;
+                var result = await _orderRepository.EditAsync(updatedOrder);
+                if (result is not null)
+                {
+                    return NoContent();
+                }
+                return BadRequest("Failed to update order. Check server logs for details.");
+            
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
-        {
-            var order = await _orderRepository.GetOneAsync(e => e.OrderId == id);
-            if (order is not null)
             {
-                await _orderRepository.DeleteAsync(order);
-                return NoContent();
+                var order = await _orderRepository.GetOneAsync(e => e.OrderId == id);
+                if (order is not null)
+                {
+                    await _orderRepository.DeleteAsync(order);
+                    return NoContent();
+                }
+                return NotFound();
             }
-            return NotFound();
-        }
     }
-}
+} 
