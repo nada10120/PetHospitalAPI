@@ -12,6 +12,7 @@ using Utility;
 using Utility.DBInitilizer;
 using ECommerce513.Utility;
 using Stripe;
+using Microsoft.AspNetCore.Mvc;
 
 namespace PetHospitalApi
 {
@@ -53,7 +54,13 @@ namespace PetHospitalApi
 .AddDefaultTokenProviders();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             builder.Services.AddScoped<IDBInitilizer, DBInitilizer>();
-
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                });
+            });
             //builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 
             //StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
@@ -71,16 +78,21 @@ namespace PetHospitalApi
                 app.MapScalarApiReference();
 
             }
+        
+            app.UseCors("AllowAll");
 
-
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+           
 
-            app.UseAuthorization();
             using (var scope = app.Services.CreateScope())
             {
                 var dbInitializer = scope.ServiceProvider.GetRequiredService<IDBInitilizer>();
@@ -89,8 +101,7 @@ namespace PetHospitalApi
             app.MapStaticAssets();
 
 
-            app.MapControllers();
-
+            app.MapControllers().WithMetadata(new AreaAttribute("Admin" ),new AreaAttribute("Identity"));
             app.Run();
         }
     }

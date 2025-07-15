@@ -12,7 +12,7 @@ namespace Models
 
     public class Order
     {
-        public string Name { get; set; }
+       
         [Key]
         public int OrderId { get; set; }
         [Required]
@@ -20,7 +20,7 @@ namespace Models
         [Required]
         public DateTime OrderDate { get; set; }
         [Required]
-        public decimal TotalAmount { get; set; }
+        public double TotalAmount { get; set; }
         public string ShippingAddress { get; set; }
         [Required]
         public string Status { get; set; } // Pending, Shipped, Delivered, Cancelled
@@ -29,7 +29,6 @@ namespace Models
         [ForeignKey("UserId")]
         public User User { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
-      
     }
 
 

@@ -28,13 +28,13 @@ namespace PetHospitalApi.Areas.Admin.Controllers
             {
                 return NotFound("No appointments found.");
             }
-            return Ok(appointments.Adapt<AppointmentResponse>());
+            return Ok(appointments.Adapt<IEnumerable<AppointmentResponse>>());
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAppointmentById([FromRoute] int id)
         {
-            var appointment = await _appointmentRepository.GetAsync(e => e.AppointmentId == id);
+            var appointment = await _appointmentRepository.GetOneAsync(e => e.AppointmentId == id);
             if (appointment == null)
             {
                 return NotFound($"Appointment with ID {id} not found.");
@@ -42,50 +42,59 @@ namespace PetHospitalApi.Areas.Admin.Controllers
             return Ok(appointment.Adapt<AppointmentResponse>());
         }
         [HttpPost]
-        public async Task<IActionResult> CreateAppointment([FromBody] AppointmentRequest appointmentrequest)
+        public async Task<IActionResult> CreateAppointment([FromBody] AppointmentRequest appointmentRequest)
         {
-            if (appointmentrequest == null)
-            {
+            if (appointmentRequest == null)
                 return BadRequest("Appointment data is null.");
-            }
+
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
+
             var appointment = new Appointment
             {
-                UserId = appointmentrequest.UserId,
-                PetId = appointmentrequest.PetId,
-                VetId = appointmentrequest.VetId,
-                //DateTime = appointmentrequest.DateTime,
-                Status = appointmentrequest.Status
+                UserId = appointmentRequest.UserId,
+                PetId = appointmentRequest.PetId,
+                VetId = appointmentRequest.VetId,
+                DateTime = appointmentRequest.DateTime ?? DateTime.UtcNow,
+                Status = appointmentRequest.Status
             };
-            await _appointmentRepository.CreateAsync(appointment);
-            return CreatedAtAction(nameof(GetAppointmentById), new { id = appointment.AppointmentId }, appointment);
+
+            var result = await _appointmentRepository.CreateAsync(appointment);
+
+            if (result == null)
+                return StatusCode(500, "Failed to create appointment. Please check the data or server logs.");
+
+            var response = result.Adapt<AppointmentResponse>();
+            return CreatedAtAction(nameof(GetAppointmentById), new { id = result.AppointmentId }, response);
         }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAppointment([FromRoute] int id, [FromBody] AppointmentRequest appointmentrequest)
+        public async Task<IActionResult> UpdateAppointment(int id, [FromBody] AppointmentRequest appointmentRequest)
         {
-            if (appointmentrequest == null)
-            {
+            if (appointmentRequest == null)
                 return BadRequest("Appointment data is null.");
-            }
+
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
+
             var appointment = await _appointmentRepository.GetOneAsync(e => e.AppointmentId == id);
             if (appointment == null)
-            {
                 return NotFound($"Appointment with ID {id} not found.");
-            }
-            appointment.UserId = appointmentrequest.UserId;
-            appointment.PetId = appointmentrequest.PetId;
-            appointment.VetId = appointmentrequest.VetId;
-            appointment.Status = appointmentrequest.Status;
-            await _appointmentRepository.EditAsync(appointment);
+
+            appointment.UserId = appointmentRequest.UserId;
+            appointment.PetId = appointmentRequest.PetId;
+            appointment.VetId = appointmentRequest.VetId;
+            appointment.DateTime = appointmentRequest.DateTime ?? appointment.DateTime;
+            appointment.Status = appointmentRequest.Status;
+
+            var result = await _appointmentRepository.EditAsync(appointment);
+
+            if (result == null)
+                return StatusCode(500, "Failed to update appointment. Check server logs.");
+
             return NoContent();
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAppointment([FromRoute] int id)
         {

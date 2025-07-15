@@ -31,5 +31,9 @@
     <ProjectReference Include="..\Utility\Utility.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\profile\" />
+  </ItemGroup>
+
 
 </Project>

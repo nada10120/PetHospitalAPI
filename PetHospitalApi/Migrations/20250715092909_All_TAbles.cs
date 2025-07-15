@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PetHospitalApi.Migrations
 {
     /// <inheritdoc />
-    public partial class Full_Tables : Migration
+    public partial class All_TAbles : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -195,7 +195,7 @@ namespace PetHospitalApi.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalAmount = table.Column<double>(type: "float", nullable: false),
                     ShippingAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -220,7 +220,8 @@ namespace PetHospitalApi.Migrations
                     Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Breed = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Age = table.Column<int>(type: "int", nullable: false),
-                    MedicalHistory = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    MedicalHistory = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -259,7 +260,8 @@ namespace PetHospitalApi.Migrations
                 {
                     VetId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Specialization = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AvailabilitySchedule = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    AvailabilitySchedule = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -283,6 +285,7 @@ namespace PetHospitalApi.Migrations
                     Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StockQuantity = table.Column<int>(type: "int", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -440,12 +443,14 @@ namespace PetHospitalApi.Migrations
                         name: "FK_PostComments_Comments_CommentId",
                         column: x => x.CommentId,
                         principalTable: "Comments",
-                        principalColumn: "CommentId");
+                        principalColumn: "CommentId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_PostComments_Posts_PostId",
                         column: x => x.PostId,
                         principalTable: "Posts",
-                        principalColumn: "PostId");
+                        principalColumn: "PostId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

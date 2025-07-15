@@ -284,10 +284,13 @@ namespace PetHospitalApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
+<<<<<<< HEAD
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+=======
+>>>>>>> 3d6975ec877b2f96f82fbced73ebf5dff70967e7
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
@@ -299,8 +302,8 @@ namespace PetHospitalApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("TotalAmount")
+                        .HasColumnType("float");
 
                     b.Property<string>("UserId")
                         .IsRequired()
