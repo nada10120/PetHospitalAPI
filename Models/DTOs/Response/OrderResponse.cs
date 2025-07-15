@@ -16,7 +16,7 @@ namespace Models.DTOs.Response
         [Required]
         public DateTime OrderDate { get; set; }
         [Required]
-        public decimal TotalAmount { get; set; }
+        public double TotalAmount { get; set; }
         public string ShippingAddress { get; set; }
         [Required]
         public string Status { get; set; } // Pending, Shipped, Delivered, Cancelled

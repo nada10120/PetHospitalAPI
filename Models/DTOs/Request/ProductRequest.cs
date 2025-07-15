@@ -14,7 +14,7 @@ namespace Models.DTOs.Request
         public string Name { get; set; }
         public string Description { get; set; }
         [Required]
-        public decimal Price { get; set; }
+        public double Price { get; set; }
         [Required]
         public string Category { get; set; }
         [Required]

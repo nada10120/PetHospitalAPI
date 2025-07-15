@@ -22,6 +22,7 @@ namespace Models
         public string Breed { get; set; }
         public int Age { get; set; }
         public string MedicalHistory { get; set; }
+        public string ProfilePicture { get; set; } = "default-pet.png"; // Default profile picture
 
         // Navigation Properties
         [ForeignKey("UserId")]

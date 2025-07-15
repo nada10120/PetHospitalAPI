@@ -32,6 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\images\Services\" />
+    <Folder Include="wwwroot\images\pets_profile\" />
     <Folder Include="wwwroot\images\profile\" />
   </ItemGroup>
 

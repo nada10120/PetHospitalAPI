@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace Models.DTOs.Request
         public string Breed { get; set; }
         public int Age { get; set; }
         public string MedicalHistory { get; set; }
+        public IFormFile? ProfilePicture { get; set; } // For uploading profile picture
 
     }
 

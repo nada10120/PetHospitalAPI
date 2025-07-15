@@ -20,6 +20,7 @@ namespace Models.DTOs.Response
         public string Breed { get; set; }
         public int Age { get; set; }
         public string MedicalHistory { get; set; }
+        public string ProfilePicture { get; set; }
 
     }
 }
