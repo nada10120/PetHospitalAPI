@@ -13,6 +13,7 @@ using System.Text.Json;
 using Repositories.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Utility;
 
 namespace PetHospitalApi.Areas.Admin.Controllers
 {
@@ -24,12 +25,14 @@ namespace PetHospitalApi.Areas.Admin.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IWebHostEnvironment _environment;
         private readonly IUserRepository _userRepository;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UsersController(UserManager<User> userManager, IWebHostEnvironment environment, IUserRepository userRepository)
+        public UsersController(UserManager<User> userManager, IWebHostEnvironment environment, IUserRepository userRepository , RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _environment = environment;
             _userRepository = userRepository;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -52,102 +55,106 @@ namespace PetHospitalApi.Areas.Admin.Controllers
             return Ok(userDto);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromForm] UserRequest userRequest)
+        public async Task <IActionResult> CreateUser([FromForm] UserRequest userRequest)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                // Validate request
-                if (userRequest == null)
-                {
-                    return BadRequest("User data is required.");
-                }
-
-                // Validate required fields
-                if (string.IsNullOrWhiteSpace(userRequest.Email) ||
-                    string.IsNullOrWhiteSpace(userRequest.Password) ||
-                    string.IsNullOrWhiteSpace(userRequest.UserName) ||
-                    string.IsNullOrWhiteSpace(userRequest.Role))
-                {
-                    return BadRequest("Email, Password, UserName, and Role are required.");
-                }
-
-                // Validate email format
-                if (!new EmailAddressAttribute().IsValid(userRequest.Email))
-                {
-                    return BadRequest("Invalid email format.");
-                }
-
-                // Validate password strength (example - adjust as needed)
-                if (userRequest.Password.Length < 8)
-                {
-                    return BadRequest("Password must be at least 8 characters long.");
-                }
-
-                // Map to User entity
-                var user = userRequest.Adapt<User>();
-
-                // Handle profile picture if provided
-                if (userRequest.ProfilePicture != null && userRequest.ProfilePicture.Length > 0)
-                {
-                    // Validate file size (e.g., 5MB limit)
-                    if (userRequest.ProfilePicture.Length > 5 * 1024 * 1024)
-                    {
-                        return BadRequest("Profile picture must be less than 5MB.");
-                    }
-
-                    // Validate file extension
-                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-                    var fileExtension = Path.GetExtension(userRequest.ProfilePicture.FileName).ToLowerInvariant();
-                    if (!allowedExtensions.Contains(fileExtension))
-                    {
-                        return BadRequest("Only JPG, JPEG, PNG, and GIF images are allowed.");
-                    }
-
-                    // Create directory if it doesn't exist
-                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "profile");
-                    if (!Directory.Exists(uploadsFolder))
-                    {
-                        Directory.CreateDirectory(uploadsFolder);
-                    }
-
-                    // Generate unique filename
-                    var fileName = $"{Guid.NewGuid()}{fileExtension}";
-                    var filePath = Path.Combine(uploadsFolder, fileName);
-
-                    // Save file
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await userRequest.ProfilePicture.CopyToAsync(stream);
-                    }
-
-                    user.ProfilePicture = fileName;
-                }
-
-                // Create user
-                var result = await _userManager.CreateAsync(user, userRequest.Password);
-                if (!result.Succeeded)
-                {
-                    // Clean up uploaded file if user creation failed
-                    if (!string.IsNullOrEmpty(user.ProfilePicture))
-                    {
-                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "profile", user.ProfilePicture);
-                       
-                    }
-
-                    return BadRequest(result.Errors.Select(e => e.Description));
-                }
-
-                
-               
-                return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user.Adapt<UserResponse>());
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
+            var user = userRequest.Adapt<User>();
+
+            // Check if the role is valid
+            if (!await _roleManager.RoleExistsAsync(userRequest.Role))
             {
-                // Log the exception (you should have logging configured)
-                // _logger.LogError(ex, "Error creating user");
-
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while creating the user.");
+                return BadRequest($"Role '{userRequest.Role}' does not exist.");
             }
+
+            // Handle profile picture upload if provided
+            if (userRequest.ProfilePicture != null)
+            {
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "profile");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(userRequest.ProfilePicture.FileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await userRequest.ProfilePicture.CopyToAsync(stream);
+                }
+                user.ProfilePicture = fileName;
+            }
+            var result = await _userManager.CreateAsync(user, userRequest.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors.Select(e => e.Description));
+            }
+            return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user.Adapt<UserResponse>());
+        }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser([FromRoute] string id, [FromForm] UserRequest userRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var user = await _userRepository.GetOneAsync(u => u.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            // Check if the role is valid
+            if (!await _roleManager.RoleExistsAsync(userRequest.Role))
+            {
+                return BadRequest($"Role '{userRequest.Role}' does not exist.");
+            }
+            user = userRequest.Adapt(user);
+
+            // Handle profile picture upload if provided
+            if (userRequest.ProfilePicture != null)
+            {
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "profile");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(userRequest.ProfilePicture.FileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await userRequest.ProfilePicture.CopyToAsync(stream);
+                }
+                user.ProfilePicture = fileName;
+            }
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+            return Ok(user.Adapt<UserResponse>());
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser([FromRoute] string id)
+        {
+            var user = await _userRepository.GetOneAsync(u => u.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            // delete the profile picture file if it exists
+            var profilePicturePath = Path.Combine(_environment.WebRootPath, "images", "profile", user.ProfilePicture);
+            if (System.IO.File.Exists(profilePicturePath))
+            {
+                System.IO.File.Delete(profilePicturePath);
+            }
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors.Select(e => e.Description));
+            }
+            return NoContent();
         }
     }
 }
