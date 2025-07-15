@@ -28,7 +28,7 @@ namespace Models
         public User User { get; set; }
         public ICollection<Appointment> Appointments { get; set; }
         public ICollection<PetService> PetServices { get; set; }
-        public int Id { get; set; }
+     
     }
 
 }

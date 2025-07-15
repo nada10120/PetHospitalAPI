@@ -49,10 +49,10 @@ namespace PetHospitalApi.Areas.Admin.Controllers
         {
             var Order = await _orderRepository.CreateAsync(OrderRequest.Adapt<Order>());
 
-            if (Order is not null)
-            {
-                return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Categories/{Order.OrderId}", Order.Adapt<OrderResponse>());
-            }
+                if (Order is not null)
+                {
+                    return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Categories/{Order.Id}", Order.Adapt<OrderResponse>());
+                }
 
             var user = await _userManager.FindByIdAsync(OrderRequest.UserId);
             if (user is null)
@@ -77,10 +77,10 @@ namespace PetHospitalApi.Areas.Admin.Controllers
             return BadRequest("Failed to create order. Check server logs for details.");
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, [FromBody] OrderRequest orderRequest)
-        {
-                var Order = await _orderRepository.GetOneAsync(e => e.OrderId == id);
+            [HttpDelete("{id}")]
+            public async Task<IActionResult> Delete([FromRoute] int id)
+            {
+                var Order = await _OrderRepository.GetOneAsync(e => e.Id == id);
 
                 var user = await _userManager.FindByIdAsync(orderRequest.UserId);
                 if (user is null)

@@ -24,7 +24,7 @@ namespace Models
 
         // Navigation Properties
         public ICollection<OrderItem> OrderItems { get; set; }
-        public int Id { get; set; }
+     
     }
 
 
