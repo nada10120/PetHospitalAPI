@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Models.DTOs.Request;
 using Models.DTOs.Response;
+using Repositories;
 
 
 namespace PetHospitalApi.Areas.Admin.Controllers
@@ -25,76 +26,76 @@ namespace PetHospitalApi.Areas.Admin.Controllers
                 _OrderRepository = OrderRepository;
             }
 
-            [HttpGet("")]
-            public async Task<IActionResult> GetAll()
+        [HttpGet("")]
+        public async Task<IActionResult> GetAll()
+        {
+            var Order = await _OrderRepository.GetAsync();
+
+
+            return Ok(Order.Adapt<IEnumerable<OrderResponse>>());
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOne([FromRoute] int id)
+        {
+            var order = await _OrderRepository.GetOneAsync(e => e.OrderId == id);
+
+            if (order is not null)
             {
-                var categories = await _OrderRepository.GetAsync();
 
-
-                return Ok(categories.Adapt<IEnumerable<OrderResponse>>());
+                return Ok(order.Adapt<OrderResponse>());
             }
 
-            [HttpGet("{id}")]
-            public async Task<IActionResult> GetOne([FromRoute] int id)
+            return NotFound();
+        }
+
+        [HttpPost("")]
+        public async Task<IActionResult> Create([FromBody] OrderRequest orderRequest)
+        {
+            var order = await _OrderRepository.CreateAsync(orderRequest.Adapt<Order>());
+
+            if (order is not null)
             {
-                var Order = await _OrderRepository.GetOneAsync(e => e.OrderId == id);
+                return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Categories/{order.OrderId}", order.Adapt<OrderResponse>());
+            }
 
-                if (Order is not null)
-                {
+            return BadRequest();
+        }
 
-                    return Ok(Order.Adapt<OrderResponse>());
-                }
-
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Edit([FromRoute] int id, [FromBody] OrderRequest orderRequest)
+        {
+            var existingorder = await _OrderRepository.GetOneAsync(e => e.OrderId == id);
+            if (existingorder is null)
+            {
                 return NotFound();
             }
+            existingorder.Name = orderRequest.Name;
+            var order = await _OrderRepository.EditAsync(existingorder);
 
-            [HttpPost("")]
-            public async Task<IActionResult> Create([FromBody] OrderRequest OrderRequest)
+            if (order is not null)
             {
-                var Order = await _OrderRepository.CreateAsync(OrderRequest.Adapt<Order>());
-                await _OrderRepository.CommitAsync();
-
-                if (Order is not null)
-                {
-                    return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Categories/{Order.OrderId}", Order.Adapt<OrderResponse>());
-                }
-
-                return BadRequest();
+                return NoContent();
             }
 
-            [HttpPut("{id}")]
-            public async Task<IActionResult> Edit([FromRoute] int id, [FromBody] OrderRequest OrderRequest)
+            return BadRequest();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            var order = await _OrderRepository.GetOneAsync(e => e.OrderId == id);
+
+            if (order is not null)
             {
-                var Order = _OrderRepository.Update(OrderRequest.Adapt<Order>());
-                await _OrderRepository.CommitAsync();
+                var result = await _OrderRepository.DeleteAsync(order);
 
-                if (Order is not null)
-                {
-                    return NoContent();
-                }
 
-                return BadRequest();
+
+                return NoContent();
             }
 
-            [HttpDelete("{id}")]
-            public async Task<IActionResult> Delete([FromRoute] int id)
-            {
-                var Order = await _OrderRepository.GetOneAsync(e => e.OrderId == id);
-
-                if (Order is not null)
-                {
-                    var result = _OrderRepository.Delete(Order);
-                    await _OrderRepository.CommitAsync();
-
-                    if (result)
-                    {
-                        return NoContent();
-                    }
-
-                    return BadRequest();
-                }
-
-                return NotFound();
-            }
+            return NotFound();
         }
     }
+}

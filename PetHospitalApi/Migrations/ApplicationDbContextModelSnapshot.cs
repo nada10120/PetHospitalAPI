@@ -284,9 +284,6 @@ namespace PetHospitalApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
@@ -355,9 +352,6 @@ namespace PetHospitalApi.Migrations
                     b.Property<string>("Breed")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
 
                     b.Property<string>("MedicalHistory")
                         .IsRequired()
@@ -466,9 +460,6 @@ namespace PetHospitalApi.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
@@ -600,9 +591,6 @@ namespace PetHospitalApi.Migrations
                     b.Property<string>("AvailabilitySchedule")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
 
                     b.Property<string>("Specialization")
                         .IsRequired()

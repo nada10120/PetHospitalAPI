@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace PetHospitalApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250712120651_AddData")]
+    [Migration("20250715174921_AddData")]
     partial class AddData
     {
         /// <inheritdoc />
@@ -215,20 +215,17 @@ namespace PetHospitalApi.Migrations
 
             modelBuilder.Entity("Models.Category", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CategoryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
                 });
@@ -289,9 +286,6 @@ namespace PetHospitalApi.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
@@ -361,9 +355,6 @@ namespace PetHospitalApi.Migrations
                     b.Property<string>("Breed")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
 
                     b.Property<string>("MedicalHistory")
                         .IsRequired()
@@ -472,9 +463,6 @@ namespace PetHospitalApi.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
@@ -606,9 +594,6 @@ namespace PetHospitalApi.Migrations
                     b.Property<string>("AvailabilitySchedule")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
 
                     b.Property<string>("Specialization")
                         .IsRequired()
