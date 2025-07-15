@@ -10,7 +10,6 @@ namespace Models.DTOs.Response
 {
     public class OrderResponse
     {
-        [Key]
         public int OrderId { get; set; }
         [Required]
         public string UserId { get; set; }

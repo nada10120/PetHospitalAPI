@@ -1,100 +1,111 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Models;
 using Repositories.IRepository;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Models.DTOs.Request;
 using Models.DTOs.Response;
-
+using Microsoft.AspNetCore.Identity;
 
 namespace PetHospitalApi.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Route("api/[Area]/[controller]")]
+    [Route("api/[area]/[controller]")]
     [ApiController]
     public class OrdersController : ControllerBase
     {
-        
-       
-            private readonly IOrderRepository _OrderRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly UserManager<User> _userManager;
 
-            public OrdersController(IOrderRepository OrderRepository)
+        public OrdersController(IOrderRepository orderRepository, UserManager<User> userManager)
+        {
+            _orderRepository = orderRepository;
+            _userManager = userManager;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var orders = await _orderRepository.GetAsync();
+            return Ok(orders.Adapt<IEnumerable<OrderResponse>>());
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOne(int id)
+        {
+            var order = await _orderRepository.GetOneAsync(e => e.OrderId == id);
+            if (order is not null)
             {
-                _OrderRepository = OrderRepository;
+                return Ok(order.Adapt<OrderResponse>());
+            }
+            return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] OrderRequest orderRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
             }
 
-            [HttpGet("")]
-            public async Task<IActionResult> GetAll()
+            var user = await _userManager.FindByIdAsync(orderRequest.UserId);
+            if (user is null)
             {
-                var categories = await _OrderRepository.GetAsync();
-
-
-                return Ok(categories.Adapt<IEnumerable<OrderResponse>>());
+                return BadRequest("Invalid UserId: User does not exist.");
             }
 
-            [HttpGet("{id}")]
-            public async Task<IActionResult> GetOne([FromRoute] int id)
+            var order = new Order
             {
-                var Order = await _OrderRepository.GetOneAsync(e => e.Id == id);
+                UserId = orderRequest.UserId,
+                OrderDate = DateTime.UtcNow,
+                TotalAmount = orderRequest.TotalAmount,
+                ShippingAddress = orderRequest.ShippingAddress ?? "Default Address",
+                Status = orderRequest.Status ?? "Pending"
+            };
 
-                if (Order is not null)
-                {
+            var createdOrder = await _orderRepository.CreateAsync(order);
+            if (createdOrder is not null)
+            {
+                return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Orders/{createdOrder.OrderId}", createdOrder.Adapt<OrderResponse>());
+            }
+            return BadRequest("Failed to create order. Check server logs for details.");
+        }
 
-                    return Ok(Order.Adapt<OrderResponse>());
-                }
-
-                return NotFound();
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Edit(int id, [FromBody] OrderRequest orderRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
             }
 
-            [HttpPost("")]
-            public async Task<IActionResult> Create([FromBody] OrderRequest OrderRequest)
+            var user = await _userManager.FindByIdAsync(orderRequest.UserId);
+            if (user is null)
             {
-                var Order = await _OrderRepository.CreateAsync(OrderRequest.Adapt<Order>());
-                await _OrderRepository.CommitAsync();
-
-                if (Order is not null)
-                {
-                    return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Categories/{Order.Id}", Order.Adapt<OrderResponse>());
-                }
-
-                return BadRequest();
+                return BadRequest("Invalid UserId: User does not exist.");
             }
 
-            [HttpPut("{id}")]
-            public async Task<IActionResult> Edit([FromRoute] int id, [FromBody] OrderRequest OrderRequest)
+            var updatedOrder = orderRequest.Adapt<Order>();
+            updatedOrder.OrderId = id;
+            var result = await _orderRepository.EditAsync(updatedOrder);
+            if (result is not null)
             {
-                var Order = _OrderRepository.Update(OrderRequest.Adapt<Order>());
-                await _OrderRepository.CommitAsync();
-
-                if (Order is not null)
-                {
-                    return NoContent();
-                }
-
-                return BadRequest();
+                return NoContent();
             }
+            return BadRequest("Failed to update order. Check server logs for details.");
+        }
 
-            [HttpDelete("{id}")]
-            public async Task<IActionResult> Delete([FromRoute] int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var order = await _orderRepository.GetOneAsync(e => e.OrderId == id);
+            if (order is not null)
             {
-                var Order = await _OrderRepository.GetOneAsync(e => e.Id == id);
-
-                if (Order is not null)
-                {
-                    var result = _OrderRepository.Delete(Order);
-                    await _OrderRepository.CommitAsync();
-
-                    if (result)
-                    {
-                        return NoContent();
-                    }
-
-                    return BadRequest();
-                }
-
-                return NotFound();
+                await _orderRepository.DeleteAsync(order);
+                return NoContent();
             }
+            return NotFound();
         }
     }
+}

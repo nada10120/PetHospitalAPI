@@ -9,8 +9,6 @@ namespace Repositories.IRepository
 {
     public interface IOrderRepository : IRepository<Order>
     {
-        Task CommitAsync();
-        bool Delete(Order Order);
-        object Update(Order Order);
+        
     }
 }

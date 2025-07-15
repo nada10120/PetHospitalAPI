@@ -39,6 +39,7 @@ namespace PetHospitalApi
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IPostRepository, PostRepository>();
             builder.Services.AddScoped<IVetRepository,VetRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
             builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
@@ -71,15 +72,18 @@ namespace PetHospitalApi
 
             }
 
-
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+           
 
-            app.UseAuthorization();
             using (var scope = app.Services.CreateScope())
             {
                 var dbInitializer = scope.ServiceProvider.GetRequiredService<IDBInitilizer>();

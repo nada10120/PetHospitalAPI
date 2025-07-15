@@ -15,7 +15,7 @@ namespace Models
       
      
         public string Address { get; set; }
-        public string ProfilePicture { get; set; }
+        public string ProfilePicture { get; set; } = "default-profile.png";
         public string Role { get; set; } // Client, Vet, Admin
 
         // Navigation Properties
