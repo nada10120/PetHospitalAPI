@@ -20,10 +20,15 @@ namespace Models
         public int PetId { get; set; }
         [Required]
         public string VetId { get; set; }
+
+
         [Required]
         public DateTime DateTime { get; set; }
         [Required]
         public string Status { get; set; } // Pending, Confirmed, Cancelled
+
+
+
 
         // Navigation Properties
         [ForeignKey("UserId")]

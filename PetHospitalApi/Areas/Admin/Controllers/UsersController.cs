@@ -14,6 +14,7 @@ using Repositories.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using Utility;
+using Repositories;
 
 namespace PetHospitalApi.Areas.Admin.Controllers
 {
@@ -26,13 +27,15 @@ namespace PetHospitalApi.Areas.Admin.Controllers
         private readonly IWebHostEnvironment _environment;
         private readonly IUserRepository _userRepository;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IVetRepository _vetRepository;
 
-        public UsersController(UserManager<User> userManager, IWebHostEnvironment environment, IUserRepository userRepository , RoleManager<IdentityRole> roleManager)
+        public UsersController(UserManager<User> userManager, IWebHostEnvironment environment, IUserRepository userRepository , RoleManager<IdentityRole> roleManager,IVetRepository vetRepository)
         {
             _userManager = userManager;
             _environment = environment;
             _userRepository = userRepository;
             _roleManager = roleManager;
+            _vetRepository = vetRepository;
         }
 
         [HttpGet]
@@ -86,9 +89,31 @@ namespace PetHospitalApi.Areas.Admin.Controllers
                 user.ProfilePicture = fileName;
             }
             var result = await _userManager.CreateAsync(user, userRequest.Password);
+
+
             if (!result.Succeeded)
             {
                 return BadRequest(result.Errors.Select(e => e.Description));
+            }
+            if (user.Role == SD.Vet)
+            {
+               var vet = new Vet
+               {
+                   VetId = user.Id,
+                  
+               };
+               var vetcreated= await _vetRepository.CreateAsync(vet);
+                if (vetcreated == null)
+                {
+                    return BadRequest("Failed to create vet profile.");
+                }
+               
+                    // Assign the role to the user
+                    await _userManager.AddToRoleAsync(user, user.Role);
+                
+
+
+
             }
             return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user.Adapt<UserResponse>());
         }

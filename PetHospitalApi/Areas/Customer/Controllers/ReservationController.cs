@@ -1,7 +1,10 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Models;
 using Models.DTOs.Request;
+using Models.DTOs.Response;
 using Repositories.IRepository;
 
 namespace PetHospitalApi.Areas.Customer.Controllers
@@ -13,11 +16,17 @@ namespace PetHospitalApi.Areas.Customer.Controllers
     {
         private readonly IServiceRepository _serviceRepository;
         private readonly IVetRepository _vetRepository;
+        private readonly IAppointmentRepository _appointmentRepository;
+        private readonly UserManager<User> _userManager;
+        private readonly IPetRepository _petRepository;
 
-        public ReservationController(IServiceRepository serviceRepository, IVetRepository vetRepository)
+        public ReservationController(IServiceRepository serviceRepository, IVetRepository vetRepository, IAppointmentRepository appointmentRepository, UserManager<User> userManager, IPetRepository petRepository)
         {
             _serviceRepository = serviceRepository;
             _vetRepository = vetRepository;
+            _appointmentRepository = appointmentRepository;
+            _userManager = userManager;
+            _petRepository = petRepository;
         }
         [HttpGet("GetAllServices")]
         public async Task<IActionResult> GetAllServices()
@@ -28,7 +37,7 @@ namespace PetHospitalApi.Areas.Customer.Controllers
                 return NotFound("No services found.");
             }
 
-            return Ok(services.Adapt<IEnumerable<ServiceRequest>>());
+            return Ok(services.Adapt<IEnumerable<ServiceResponse>>());
         }
         [HttpGet("GetAllVets")]
         public async Task<IActionResult> GetAllVets()
@@ -39,7 +48,7 @@ namespace PetHospitalApi.Areas.Customer.Controllers
                 return NotFound("No vets found.");
             }
 
-            return Ok(vets.Adapt<IEnumerable<VetRequest>>());
+            return Ok(vets.Adapt<IEnumerable<VetResponse>>());
         }
         [HttpGet("GetVetById/{id}")]
         public async Task<IActionResult> GetVetById([FromRoute] string id)
@@ -49,7 +58,7 @@ namespace PetHospitalApi.Areas.Customer.Controllers
             {
                 return NotFound($"Vet with ID {id} not found.");
             }
-            return Ok(vet.Adapt<VetRequest>());
+            return Ok(vet.Adapt<VetResponse>());
 
         }
         [HttpGet("GetServiceById/{id}")]
@@ -60,8 +69,97 @@ namespace PetHospitalApi.Areas.Customer.Controllers
             {
                 return NotFound($"Service with ID {id} not found.");
             }
-            return Ok(service.Adapt<ServiceRequest>());
+            return Ok(service.Adapt<ServiceResponse>());
         }
+        [HttpPost("CreateReservation")]
+        public async Task<IActionResult> CreateReservation([FromBody] AppointmentRequest AppointmentRequest)
+        {
+            if (AppointmentRequest == null)
+            {
+                return BadRequest("Invalid appointment request.");
+            }
+            var appointment = AppointmentRequest.Adapt<Appointment>();
+            // Validate the vet exists  
+            var vet = await _vetRepository.GetOneAsync(v => v.VetId == appointment.VetId);
+            if (vet == null)
+            {
+                return NotFound($"Vet with ID {appointment.VetId} not found.");
+            }
+            // Validate the pet exists
+            var pet = await _petRepository.GetOneAsync(p => p.PetId == appointment.PetId);
+            if (pet == null)
+            {
+                return NotFound($"Pet with ID {appointment.PetId} not found.");
+            }
+            // Validate the user exists
+            var user = await _userManager.FindByIdAsync(appointment.UserId);
 
+            if (user == null)
+            {
+                return NotFound($"User with ID {appointment.UserId} not found.");
+            }
+
+            var result = await _appointmentRepository.CreateAsync(appointment);
+            if (result == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error creating reservation.");
+            }
+            return CreatedAtAction(nameof(GetVetById), new { id = appointment.VetId }, appointment.Adapt<AppointmentResponse>());
+
+
+
+        }
+        [HttpGet("GetAllReservations")]
+        public async Task<IActionResult> GetAllReservations()
+        {
+            var appointments = await _appointmentRepository.GetAsync();
+            if (appointments == null || !appointments.Any())
+            {
+                return NotFound("No reservations found.");
+            }
+            return Ok(appointments.Adapt<IEnumerable<AppointmentResponse>>());
+        }
+        [HttpGet("GetReservationById/{id}")]
+        public async Task<IActionResult> GetReservationById([FromRoute] int id)
+        {
+            var appointment = await _appointmentRepository.GetOneAsync(a => a.AppointmentId == id);
+            if (appointment == null)
+            {
+                return NotFound($"Reservation with ID {id} not found.");
+            }
+            return Ok(appointment.Adapt<AppointmentResponse>());
+        }
+        [HttpPut("UpdateReservation/{id}")]
+        public async Task<IActionResult> UpdateReservation([FromRoute] int id, [FromBody] AppointmentRequest appointmentRequest)
+        {
+            if (appointmentRequest == null)
+            {
+                return BadRequest("Invalid appointment request.");
+            }
+            var appointment = await _appointmentRepository.GetOneAsync(a => a.AppointmentId == id);
+            if (appointment == null)
+            {
+                return NotFound($"Reservation with ID {id} not found.");
+            }
+            appointment = appointmentRequest.Adapt(appointment);
+            var updatedAppointment = await _appointmentRepository.EditAsync(appointment);
+            if (updatedAppointment == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error updating reservation.");
+            }
+            return Ok(updatedAppointment.Adapt<AppointmentResponse>());
+        }
+        [HttpDelete("DeleteReservation/{id}")]
+        public async Task<IActionResult> DeleteReservation([FromRoute] int id)
+        {
+            var appointment = await _appointmentRepository.GetOneAsync(a => a.AppointmentId == id);
+            if (appointment == null)
+            {
+                return NotFound($"Reservation with ID {id} not found.");
+            }
+             await _appointmentRepository.DeleteAsync(appointment);
+            
+            return NoContent();
+        }
     }
-}
+    }
