@@ -11,6 +11,8 @@ namespace Repositories.IRepository
     {
         Task CommitAsync();
         bool Delete(Category category);
+        Task<IEnumerable<Category>> GetAllAsync();
+        Task<Category?> GetByIdAsync(int id);
         object Update(Category category);
     }
 }

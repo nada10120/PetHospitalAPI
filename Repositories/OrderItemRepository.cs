@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using DataManager;
-using Microsoft.EntityFrameworkCore;
 using Models;
 using Repositories.IRepository;
 
 namespace Repositories
 {
-    public class CategoryRepository : Repository<Category> , ICategoryRepository
+    public class OrderItemRepository : Repository<Order> , IOrderRepository
     {
         private readonly ApplicationDbContext context;
-        public CategoryRepository(ApplicationDbContext context) : base(context)
+        public OrderItemRepository(ApplicationDbContext context) : base(context)
         {
             this.context = context;
         }
@@ -23,25 +23,19 @@ namespace Repositories
             throw new NotImplementedException();
         }
 
-        public bool Delete(Category category)
+        public bool Delete(Order Order)
         {
             throw new NotImplementedException();
         }
 
-    
-
-        public object Update(Category category)
+        public Order GetOne(Expression<Func<Order, bool>> filter)
         {
             throw new NotImplementedException();
         }
-        public async Task<IEnumerable<Category>> GetAllAsync()
-        {
-            return await context.Categories.ToListAsync();
-        }
 
-        public async Task<Category?> GetByIdAsync(int id)
+        public object Update(Order Order)
         {
-            return await context.Categories.FirstOrDefaultAsync(c => c.CategoryId == id);
+            throw new NotImplementedException();
         }
     }
 }

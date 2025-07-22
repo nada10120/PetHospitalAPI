@@ -7,8 +7,9 @@ using Models;
 
 namespace Repositories.IRepository
 {
-    public interface IOrderRepository : IRepository<Order>
+    public interface IOrderItemRepository : IRepository<Order>
     {
-        Task CommitAsync();
+        Task CreateRangeAsync(IEnumerable<OrderItem> orderItems);
+
     }
 }

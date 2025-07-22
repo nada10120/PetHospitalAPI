@@ -28,6 +28,9 @@ namespace Models
         [ForeignKey("UserId")]
         public User User { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
+        public int SessionId { get; set; }
+        public bool TransactionStatus { get; set; }
+        public int TransctionId { get; set; }
     }
 
 

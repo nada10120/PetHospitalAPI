@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Models;
 
-namespace Repositories.IRepository
+namespace Models.DTOs.Response
 {
-    public interface IOrderRepository : IRepository<Order>
+    public class FilterItemsResponse
     {
-        Task CommitAsync();
+     
     }
 }

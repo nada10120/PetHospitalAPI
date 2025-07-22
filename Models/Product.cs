@@ -17,14 +17,17 @@ namespace Models
         [Required]
         public double Price { get; set; }
         [Required]
-        public string Category { get; set; }
+        public Category Category { get; set; }
+        public int? CategoryId { get; set; }
         [Required]
         public int StockQuantity { get; set; }
         public string ImageUrl { get; set; }
 
         // Navigation Properties
         public ICollection<OrderItem> OrderItems { get; set; }
-     
+        public int Quantity { get; set; }
+       
+        public int Traffic { get; set; }
     }
 
 

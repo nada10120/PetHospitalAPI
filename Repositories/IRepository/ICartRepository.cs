@@ -7,8 +7,9 @@ using Models;
 
 namespace Repositories.IRepository
 {
-    public interface IOrderRepository : IRepository<Order>
+    public interface ICartRepository : IRepository<Cart>
     {
         Task CommitAsync();
+        Task<bool> DeleteRangeAsync(IEnumerable<Cart> entities);
     }
 }

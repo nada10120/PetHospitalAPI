@@ -9,7 +9,7 @@ namespace Models
 
     public class Category
     {
-        public int CategoryId { get; set; } // Primary Key
+        public int? CategoryId { get; set; } // Primary Key
         public string Name { get; set; }
 
         // Navigation Property
