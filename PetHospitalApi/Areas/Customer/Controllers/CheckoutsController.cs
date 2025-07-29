@@ -9,7 +9,8 @@ using Stripe.BillingPortal;
 
 namespace PetHospitalApi.Areas.Customer.Controllers
 {
-    [Route("api/[controller]")]
+    [Area("Customer")]
+    [Route("api/[area]/[controller]")]
     [ApiController]
     public class CheckoutController : ControllerBase
     {
