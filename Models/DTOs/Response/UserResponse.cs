@@ -20,6 +20,8 @@ namespace Models.DTOs.Response
         public int PostCount { get; set; }
         public int CommentCount { get; set; }
         public int LikeCount { get; set; }
+        public string? Specialization { get; set; } // For vets
+        public string? AvailabilitySchedule { get; set; } // For vets
     }
 }
 

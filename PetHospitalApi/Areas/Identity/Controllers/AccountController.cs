@@ -45,7 +45,7 @@ namespace PetHospitalApi.Areas.Identity.Controllers
                 await _emailSender.SendEmailAsync(registerRequest.Email, "Confirm Your Account", $"Please Confirm Your Account By Clicking <a href='{confirmationLink}'>Here</a>");
                 Console.WriteLine($"Confirmation Link: {confirmationLink}");
                 
-                await _userManager.AddToRoleAsync(applicationUser, SD.PetOwner);
+                await _userManager.AddToRoleAsync(applicationUser, SD.Client);
                 return Ok(new { Message = "User created successfully, please check your email to confirm your account." });
             }
             return BadRequest(result.Errors);

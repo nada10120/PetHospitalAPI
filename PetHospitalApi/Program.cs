@@ -53,7 +53,7 @@ namespace PetHospitalApi
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
-            builder.Services.AddScoped<IDBInitilizer, DBInitilizer>();
+            builder.Services.AddScoped<IDBInitializer, DBInitilizer>();
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", builder =>
@@ -95,7 +95,7 @@ namespace PetHospitalApi
 
             using (var scope = app.Services.CreateScope())
             {
-                var dbInitializer = scope.ServiceProvider.GetRequiredService<IDBInitilizer>();
+                var dbInitializer = scope.ServiceProvider.GetRequiredService<IDBInitializer>();
                 dbInitializer.Initilize();
             }
             app.MapStaticAssets();

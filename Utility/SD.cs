@@ -6,7 +6,7 @@
         public const string SuperAdmin = "SuperAdmin";
         public const string Admin = "Admin";
         public const string Vet = "Vet";
-        public const string PetOwner = "PetOwner";
+        public const string Client = "Client";
 
     }
 }
