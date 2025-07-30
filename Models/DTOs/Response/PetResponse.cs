@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Models.DTOs.Response
 {
@@ -21,6 +16,5 @@ namespace Models.DTOs.Response
         public int Age { get; set; }
         public string MedicalHistory { get; set; }
         public string ProfilePicture { get; set; }
-
     }
 }

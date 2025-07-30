@@ -1,10 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Models.DTOs.Request
 {
@@ -20,7 +15,6 @@ namespace Models.DTOs.Request
         public int Age { get; set; }
         public string MedicalHistory { get; set; }
         public IFormFile? ProfilePicture { get; set; } // For uploading profile picture
-
+        public string? ExistingProfilePicture { get; set; } // For existing profile picture filename
     }
-
 }

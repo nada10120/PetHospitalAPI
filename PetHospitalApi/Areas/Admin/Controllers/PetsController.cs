@@ -1,191 +1,272 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Models;
 using Models.DTOs.Request;
 using Models.DTOs.Response;
-using Models;
 using Repositories.IRepository;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace PetHospitalApi.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Route("api/[Area]/[controller]")]
+    [Route("api/[area]/[controller]")]
     [ApiController]
     public class PetsController : ControllerBase
     {
         private readonly IPetRepository _PetRepository;
         private readonly UserManager<User> _userManager;
         private readonly IWebHostEnvironment _environment;
+        private readonly ILogger<PetsController> _logger;
 
-        public PetsController(IPetRepository PetRepository, UserManager<User> userManager, IWebHostEnvironment environment)
+        public PetsController(
+            IPetRepository PetRepository,
+            UserManager<User> userManager,
+            IWebHostEnvironment environment,
+            ILogger<PetsController> logger)
         {
             _PetRepository = PetRepository;
             _userManager = userManager;
-            _environment = environment; 
+            _environment = environment;
+            _logger = logger;
         }
 
         [HttpGet("")]
         public async Task<IActionResult> GetAll()
         {
-            var categories = await _PetRepository.GetAsync();
-
-
-            return Ok(categories.Adapt<IEnumerable<PetResponse>>());
+            var pets = await _PetRepository.GetAsync();
+            return Ok(pets.Adapt<IEnumerable<PetResponse>>());
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOne([FromRoute] int id)
         {
-            var Pet = await _PetRepository.GetOneAsync(e => e.PetId == id);
-
-            if (Pet is not null)
+            var pet = await _PetRepository.GetOneAsync(e => e.PetId == id);
+            if (pet is not null)
             {
-
-                return Ok(Pet.Adapt<PetResponse>());
+                return Ok(pet.Adapt<PetResponse>());
             }
-
             return NotFound();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] PetRequest PetRequest)
+        public async Task<IActionResult> Create([FromForm] PetRequest petRequest)
         {
-            if (PetRequest is null)
+            _logger.LogInformation("CreatePet request: {Request}", JsonSerializer.Serialize(petRequest));
+
+            if (petRequest is null)
             {
+                _logger.LogError("CreatePet failed: Invalid Pet data.");
                 return BadRequest("Invalid Pet data.");
             }
+
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                _logger.LogError("CreatePet failed: ModelState invalid, Errors: {Errors}", JsonSerializer.Serialize(errors));
+                return BadRequest(new { Errors = errors });
             }
-            // Check if the user exists
-            var user = await _userManager.FindByIdAsync(PetRequest.UserId);
+
+            var user = await _userManager.FindByIdAsync(petRequest.UserId);
             if (user is null)
             {
+                _logger.LogError("CreatePet failed: User with ID {UserId} not found", petRequest.UserId);
                 return BadRequest("User does not exist.");
             }
-            var Pet = PetRequest.Adapt<Pet>();
+
+            var pet = petRequest.Adapt<Pet>();
+
             // Handle profile picture upload if provided
-            if (PetRequest.ProfilePicture != null)
+            if (petRequest.ProfilePicture != null)
             {
                 var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "pets_profile");
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(PetRequest.ProfilePicture.FileName);
-                var filePath = Path.Combine(uploadsFolder, fileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await PetRequest.ProfilePicture.CopyToAsync(stream);
-                }
-                Pet.ProfilePicture = fileName;
-            }
-            var PetCreated = await _PetRepository.CreateAsync(Pet);
-
-            if (PetCreated is not null)
-            {
-                return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Categories/{Pet.PetId}", Pet.Adapt<PetResponse>());
-            }
-
-            return BadRequest();
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Edit([FromRoute] int id, [FromForm] PetRequest PetRequest)
-        {
-            if (PetRequest is null)
-            {
-                return BadRequest("Invalid Pet data.");
-            }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            // Check if the user exists
-            var user = await _userManager.FindByIdAsync(PetRequest.UserId);
-            if (user is null)
-            {
-                return BadRequest("User does not exist.");
-            }
-
-            // Check if the pet exists
-            var existingPet = await _PetRepository.GetOneAsync(e => e.PetId == id,tracked:false);
-            if (existingPet is null)
-            {
-                return NotFound("Pet not found.");
-            }
-
-            // Map the request to the existing pet
-            var Pet = PetRequest.Adapt<Pet>();
-            Pet.PetId = existingPet.PetId;
-
-            // Handle profile picture upload if provided
-            if (PetRequest.ProfilePicture != null)
-            {
-                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "pets_profile");
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(PetRequest.ProfilePicture.FileName);
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(petRequest.ProfilePicture.FileName);
                 var filePath = Path.Combine(uploadsFolder, fileName);
                 try
                 {
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        await PetRequest.ProfilePicture.CopyToAsync(stream);
+                        await petRequest.ProfilePicture.CopyToAsync(stream);
                     }
-                    Pet.ProfilePicture = fileName;
-                    Console.WriteLine($"Profile picture saved: {fileName}, Path: {filePath}");
+                    pet.ProfilePicture = fileName;
+                    _logger.LogInformation("Profile picture saved: {FileName}, Path: {FilePath}", fileName, filePath);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"File upload failed: {ex}");
-                    return BadRequest("Failed to upload profile picture.");
+                    _logger.LogError("Failed to save profile picture {FileName}: {Message}", fileName, ex.Message);
+                    return StatusCode(500, new { Errors = new[] { "Failed to process profile picture." } });
                 }
             }
             else
             {
-                Pet.ProfilePicture = existingPet.ProfilePicture;
+                pet.ProfilePicture = "default-pet.png"; // Set default if no picture is provided
             }
 
-            // Log the Pet object
-            Console.WriteLine($"Pet to update: {JsonSerializer.Serialize(Pet)}");
-
-            var PetEdited = await _PetRepository.EditAsync(Pet);
-
-            if (PetEdited is not null)
+            var petCreated = await _PetRepository.CreateAsync(pet);
+            if (petCreated is not null)
             {
+                _logger.LogInformation("Pet created with ID: {PetId}", pet.PetId);
+                return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Pets/{pet.PetId}", pet.Adapt<PetResponse>());
+            }
+
+            _logger.LogError("CreatePet failed: Unable to create pet.");
+            return BadRequest("Failed to create pet.");
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Edit([FromRoute] int id, [FromForm] PetRequest petRequest)
+        {
+            _logger.LogInformation("EditPet request for ID {Id}: {Request}", id, JsonSerializer.Serialize(petRequest));
+            _logger.LogInformation("ExistingProfilePicture received: {ExistingProfilePicture}", petRequest.ExistingProfilePicture);
+
+            if (petRequest is null)
+            {
+                _logger.LogError("EditPet failed: Invalid Pet data.");
+                return BadRequest("Invalid Pet data.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                _logger.LogError("EditPet failed: ModelState invalid, Errors: {Errors}", JsonSerializer.Serialize(errors));
+                return BadRequest(new { Errors = errors });
+            }
+
+            var user = await _userManager.FindByIdAsync(petRequest.UserId);
+            if (user is null)
+            {
+                _logger.LogError("EditPet failed: User with ID {UserId} not found", petRequest.UserId);
+                return BadRequest("User does not exist.");
+            }
+
+            var existingPet = await _PetRepository.GetOneAsync(e => e.PetId == id, tracked: false);
+            if (existingPet is null)
+            {
+                _logger.LogError("EditPet failed: Pet with ID {Id} not found", id);
+                return NotFound("Pet not found.");
+            }
+
+            // Map properties manually to avoid null issues
+            var pet = new Pet
+            {
+                PetId = existingPet.PetId,
+                UserId = petRequest.UserId,
+                Name = petRequest.Name,
+                Type = petRequest.Type,
+                Breed = petRequest.Breed,
+                Age = petRequest.Age,
+                MedicalHistory = petRequest.MedicalHistory
+            };
+
+            // Handle profile picture
+            _logger.LogInformation("ProfilePicture before update: {ProfilePicture}", existingPet.ProfilePicture);
+            if (petRequest.ProfilePicture != null)
+            {
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "pets_profile");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(petRequest.ProfilePicture.FileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
+                try
+                {
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await petRequest.ProfilePicture.CopyToAsync(stream);
+                    }
+                    if (!string.IsNullOrEmpty(existingPet.ProfilePicture) && existingPet.ProfilePicture != "default-pet.png")
+                    {
+                        var oldFilePath = Path.Combine(uploadsFolder, existingPet.ProfilePicture);
+                        if (System.IO.File.Exists(oldFilePath))
+                        {
+                            try
+                            {
+                                System.IO.File.Delete(oldFilePath);
+                                _logger.LogInformation("Deleted old profile picture: {OldFilePath}", oldFilePath);
+                            }
+                            catch (UnauthorizedAccessException ex)
+                            {
+                                _logger.LogWarning("Failed to delete old profile picture {OldFilePath}: {Message}", oldFilePath, ex.Message);
+                            }
+                            catch (IOException ex)
+                            {
+                                _logger.LogWarning("Failed to delete old profile picture {OldFilePath}: {Message}", oldFilePath, ex.Message);
+                            }
+                        }
+                    }
+                    pet.ProfilePicture = fileName;
+                    _logger.LogInformation("Profile picture saved: {FileName}, Path: {FilePath}", fileName, filePath);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("Failed to save profile picture {FileName}: {Message}", fileName, ex.Message);
+                    return StatusCode(500, new { Errors = new[] { "Failed to process profile picture." } });
+                }
+            }
+            else
+            {
+                pet.ProfilePicture = !string.IsNullOrEmpty(petRequest.ExistingProfilePicture)
+                    ? petRequest.ExistingProfilePicture
+                    : (existingPet.ProfilePicture ?? "default-pet.png");
+            }
+
+            _logger.LogInformation("ProfilePicture after update: {ProfilePicture}", pet.ProfilePicture);
+
+            var petEdited = await _PetRepository.EditAsync(pet);
+            if (petEdited is not null)
+            {
+                _logger.LogInformation("Pet updated with ID: {PetId}", pet.PetId);
                 return NoContent();
             }
 
+            _logger.LogError("EditPet failed: Unable to update pet.");
             return BadRequest("Failed to update pet. Check server logs for details.");
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var Pet = await _PetRepository.GetOneAsync(e => e.PetId == id);
-
-            if (Pet is not null)
+            var pet = await _PetRepository.GetOneAsync(e => e.PetId == id);
+            if (pet is not null)
             {
-                // Check if the profile picture file exists and delete it
-                var profilePicturePath = Path.Combine(_environment.WebRootPath, "images", "pets_profile", Pet.ProfilePicture);
-                if (System.IO.File.Exists(profilePicturePath))
+                if (!string.IsNullOrEmpty(pet.ProfilePicture) && pet.ProfilePicture != "default-pet.png")
                 {
-                    System.IO.File.Delete(profilePicturePath);
+                    var profilePicturePath = Path.Combine(_environment.WebRootPath, "images", "pets_profile", pet.ProfilePicture);
+                    if (System.IO.File.Exists(profilePicturePath))
+                    {
+                        try
+                        {
+                            System.IO.File.Delete(profilePicturePath);
+                            _logger.LogInformation("Deleted profile picture: {ProfilePicturePath}", profilePicturePath);
+                        }
+                        catch (UnauthorizedAccessException ex)
+                        {
+                            _logger.LogWarning("Failed to delete profile picture {ProfilePicturePath}: {Message}", profilePicturePath, ex.Message);
+                        }
+                        catch (IOException ex)
+                        {
+                            _logger.LogWarning("Failed to delete profile picture {ProfilePicturePath}: {Message}", profilePicturePath, ex.Message);
+                        }
+                    }
                 }
-                var result = await _PetRepository.DeleteAsync(Pet);
-
+                await _PetRepository.DeleteAsync(pet);
                 
+                    _logger.LogInformation("Pet deleted with ID: {PetId}", id);
                     return NoContent();
-               
+                
+                
             }
 
+            _logger.LogError("DeletePet failed: Pet with ID {Id} not found", id);
             return NotFound();
         }
     }
