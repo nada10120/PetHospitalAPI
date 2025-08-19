@@ -9,88 +9,99 @@ using Mapster;
 namespace PetHospitalApi.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Route("api/[Area]/[controller]")]
+    [Route("api/[area]/[controller]")]
     [ApiController]
     public class VetsController : ControllerBase
     {
-        private readonly IVetRepository _VetRepository;
+        private readonly IVetRepository _vetRepository;
 
-        public VetsController(IVetRepository VetRepository)
+        public VetsController(IVetRepository vetRepository)
         {
-            _VetRepository = VetRepository;
+            _vetRepository = vetRepository;
         }
 
-      
-        [HttpGet("")]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var categories = await _VetRepository.GetAsync();
-
-
-            return Ok(categories.Adapt<IEnumerable<VetResponse>>());
+            var vets = await _vetRepository.GetAsync();
+            return Ok(vets.Adapt<IEnumerable<VetResponse>>());
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOne([FromRoute] string id)
         {
-            var Vet = await _VetRepository.GetOneAsync(e => e.VetId == id);
-
-            if (Vet is not null)
+            var vet = await _vetRepository.GetOneAsync(e => e.VetId == id);
+            if (vet != null)
             {
-
-                return Ok(Vet.Adapt<VetResponse>());
+                return Ok(vet.Adapt<VetResponse>());
             }
-
-            return NotFound();
+            return NotFound($"Vet with ID {id} not found.");
         }
 
-        [HttpPost("")]
-        public async Task<IActionResult> Create([FromBody] VetRequest VetRequest)
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] VetRequest vetRequest)
         {
-            var Vet = await _VetRepository.CreateAsync(VetRequest.Adapt<Vet>());
-            await _VetRepository.CommitAsync();
+            if (vetRequest == null)
+                return BadRequest("Vet data is null.");
 
-            if (Vet is not null)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var vet = vetRequest.Adapt<Vet>();
+            var createdVet = await _vetRepository.CreateAsync(vet);
+            await _vetRepository.CommitAsync();
+
+            if (createdVet != null)
             {
-                return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Categories/{Vet.VetId}", Vet.Adapt<VetResponse>());
+                return Created($"{Request.Scheme}://{Request.Host}/api/Admin/Vets/{createdVet.VetId}", createdVet.Adapt<VetResponse>());
             }
 
-            return BadRequest();
+            return StatusCode(500, "Failed to create vet. Please check the data or server logs.");
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit([FromRoute] int id, [FromBody] VetRequest VetRequest)
+        public async Task<IActionResult> Edit([FromRoute] string id, [FromBody] VetRequest vetRequest)
         {
-            var Vet = _VetRepository.Update(VetRequest.Adapt<Vet>());
-            await _VetRepository.CommitAsync();
+            if (vetRequest == null)
+                return BadRequest("Vet data is null.");
 
-            if (Vet is not null)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var existingVet = await _vetRepository.GetOneAsync(e => e.VetId == id);
+            if (existingVet == null)
+                return NotFound($"Vet with ID {id} not found.");
+
+            vetRequest.Adapt(existingVet);
+            var updatedVet = _vetRepository.Update(existingVet);
+            await _vetRepository.CommitAsync();
+
+            if (updatedVet != null)
             {
                 return NoContent();
             }
 
-            return BadRequest();
+            return StatusCode(500, "Failed to update vet. Please check the data or server logs.");
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
-            var Vet = await _VetRepository.GetOneAsync(e => e.VetId == id);
-
-            if (Vet is not null)
+            var vet = await _vetRepository.GetOneAsync(e => e.VetId == id);
+            if (vet != null)
             {
-                var result = _VetRepository.Delete(Vet);
-                await _VetRepository.CommitAsync();
+                var result = _vetRepository.Delete(vet);
+                await _vetRepository.CommitAsync();
 
                 if (result)
                 {
                     return NoContent();
                 }
 
-                return BadRequest();
+                return StatusCode(500, "Failed to delete vet. Please check the data or server logs.");
             }
 
-            return NotFound();
+            return NotFound($"Vet with ID {id} not found.");
         }
     }
 }

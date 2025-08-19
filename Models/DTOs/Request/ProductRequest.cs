@@ -1,26 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Models.DTOs.Request
 {
     public class ProductRequest
     {
-      
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
         [Required]
         public double Price { get; set; }
-        [Required]
-        public string Category { get; set; }
+        
+        public int traffic { get; set; }
+        public int? CategoryId { get; set; }
+
         [Required]
         public int StockQuantity { get; set; }
-        public string ImageUrl { get; set; }
-
+        public IFormFile? Image { get; set; }
     }
-
 }
