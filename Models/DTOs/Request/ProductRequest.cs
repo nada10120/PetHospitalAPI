@@ -16,6 +16,7 @@ namespace Models.DTOs.Request
 
         [Required]
         public int StockQuantity { get; set; }
-        public IFormFile? Image { get; set; }
+        public string ExistingImageUrl { get; set; }
+        public IFormFile? ImageFile { get; set; }
     }
 }

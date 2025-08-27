@@ -13,7 +13,7 @@ namespace Models.DTOs.Request
         public double? MinPrice { get; set; }
         public double? MaxPrice { get; set; }
         public int? CategoryId { get; set; }
-        public string Search { get; set; }
+        public string? Search { get; set; }
     }
 
 }

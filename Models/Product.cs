@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Models
@@ -17,6 +18,7 @@ namespace Models
         [Required]
         public double Price { get; set; }
         [Required]
+        [JsonIgnore]
         public Category Category { get; set; }
         public int? CategoryId { get; set; }
         [Required]
@@ -24,6 +26,7 @@ namespace Models
         public string ImageUrl { get; set; }
 
         // Navigation Properties
+        [JsonIgnore]
         public ICollection<OrderItem> OrderItems { get; set; }
         public int Quantity { get; set; }
        
