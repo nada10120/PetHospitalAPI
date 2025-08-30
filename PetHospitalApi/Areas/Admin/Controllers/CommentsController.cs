@@ -27,9 +27,23 @@ namespace PetHospitalApi.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-
             var comments = await _commentRepository.GetAsync();
-            return Ok(comments);
+
+            var response = new List<CommentResponse>();
+
+            foreach (var comment in comments)
+            {
+                var user = await _userManager.FindByIdAsync(comment.UserId);
+                response.Add(new CommentResponse
+                {
+                    CommentId = comment.CommentId,
+                    Content = comment.Content,
+                    UserName = user?.UserName, // رجع اليوزر نيم
+                    PostId = comment.PostId
+                });
+            }
+
+            return Ok(response);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
@@ -41,12 +55,13 @@ namespace PetHospitalApi.Areas.Admin.Controllers
             }
             return Ok(comment);
         }
-        [HttpPost]
+        [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] CommentRequest commentRequest)
         {
             // Validate the request model
             if (!ModelState.IsValid)
             {
+
                 return BadRequest(ModelState);
             }
 
@@ -69,7 +84,7 @@ namespace PetHospitalApi.Areas.Admin.Controllers
             {
                 UserId = commentRequest.UserId,
                 Content = commentRequest.Content,
-                PostId = commentRequest.PostId,
+                PostId = (int)commentRequest.PostId,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -93,7 +108,7 @@ namespace PetHospitalApi.Areas.Admin.Controllers
             }
             // Update the comment properties
             comment.Content = commentRequest.Content;
-            comment.PostId = commentRequest.PostId;
+            comment.PostId = (int)commentRequest.PostId;
             // Save the changes
             await _commentRepository.EditAsync(comment);
             return NoContent();

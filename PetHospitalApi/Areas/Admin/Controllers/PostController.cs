@@ -27,7 +27,23 @@ namespace PetHospitalApi.Areas.Admin.Controllers
         public async Task<IActionResult> GetAll()
         {
             var posts = await _postRepository.GetAsync();
-            return Ok(posts.Adapt<IEnumerable<PostResponse>>());
+            var response = new List<PostResponse>();
+            foreach (var post in posts)
+            {
+                var user = _userManager.FindByIdAsync(post.UserId);
+                response.Add(new PostResponse
+                {
+                    PostId = post.PostId,
+                    UserId = post.UserId,
+                    UserName = user.Result.UserName,
+                    Content = post.Content,
+                    MediaUrl = post.MediaUrl,
+                    CreatedAt = post.CreatedAt,
+
+                });
+
+            }
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
@@ -41,8 +57,8 @@ namespace PetHospitalApi.Areas.Admin.Controllers
             return Ok(post.Adapt<PostResponse>());
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(PostRequest post)
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create([FromForm]PostRequest post)
         {
             if (post == null)
             {
@@ -67,10 +83,21 @@ namespace PetHospitalApi.Areas.Admin.Controllers
             {
                 UserId = post.UserId,
                 Content = post.Content,
-                MediaUrl = post.MediaUrl,
                 CreatedAt = DateTime.UtcNow
             };
+            if (post.MediaUrl != null)
+            {
+                var uploadsFolder = Path.Combine("wwwroot", "images", "posts");
+                Directory.CreateDirectory(uploadsFolder);
 
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(post.MediaUrl.FileName)}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using var stream = new FileStream(filePath, FileMode.Create);
+                await post.MediaUrl.CopyToAsync(stream);
+
+                postEntity.MediaUrl = $"/images/posts/{fileName}";
+            }
             await _postRepository.CreateAsync(postEntity);
             return CreatedAtAction(nameof(GetById), new { id = postEntity.PostId }, postEntity.Adapt<PostResponse>());
         }
@@ -95,7 +122,19 @@ namespace PetHospitalApi.Areas.Admin.Controllers
                 return NotFound();
             }
             existingPost.Content = post.Content;
-            existingPost.MediaUrl = post.MediaUrl;
+            if (post.MediaUrl != null)
+            {
+                var uploadsFolder = Path.Combine("wwwroot", "images", "posts");
+                Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(post.MediaUrl.FileName)}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using var stream = new FileStream(filePath, FileMode.Create);
+                await post.MediaUrl.CopyToAsync(stream);
+
+                existingPost.MediaUrl = $"/images/posts/{fileName}";
+            }
             await _postRepository.EditAsync(existingPost);
             return Ok(existingPost.Adapt<PostResponse>());
         }

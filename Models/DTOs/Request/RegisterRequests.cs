@@ -24,7 +24,7 @@ namespace Models.DTOs.Request
 
         public string ProfilePicture { get; set; }
 
-        public string Role { get; set; } // Client, Vet, Admin
+        public string? Role { get; set; } // Client, Vet, Admin
 
 
     }

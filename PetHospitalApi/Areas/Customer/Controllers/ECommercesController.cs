@@ -4,6 +4,11 @@ using Repositories.IRepository;
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Models.DTOs.Response;
+using Repositories;
+using ServiceStack;
+using Mapster;
+using Models;
 
 namespace PetHospitalApi.Areas.Customer.Controllers
 {
@@ -15,15 +20,18 @@ namespace PetHospitalApi.Areas.Customer.Controllers
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly ILogger<ECommercesController> _logger;
+        private readonly IAppointmentRepository _appointmentRepository;
 
         public ECommercesController(
             IProductRepository productRepository,
             ICategoryRepository categoryRepository,
-            ILogger<ECommercesController> logger)
+            ILogger<ECommercesController> logger,
+            IAppointmentRepository appointmentRepository)
         {
             _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
             _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _appointmentRepository = appointmentRepository;
         }
 
         [HttpGet("index")]
@@ -41,8 +49,8 @@ namespace PetHospitalApi.Areas.Customer.Controllers
                 _logger.LogInformation("Fetching products with filter: Search={Search}, ProductName={ProductName}, MinPrice={MinPrice}, MaxPrice={MaxPrice}, CategoryId={CategoryId}, Page={Page}",
                     filterItemsVM.Search ?? "null",
                     filterItemsVM.ProductName ?? "null",
-                    filterItemsVM.MinPrice,
-                    filterItemsVM.MaxPrice,
+                    filterItemsVM.MinPrice??0,
+                    filterItemsVM.MaxPrice??3000,
                     filterItemsVM.CategoryId,
                     page);
 
@@ -80,6 +88,7 @@ namespace PetHospitalApi.Areas.Customer.Controllers
                 return StatusCode(500, new { Errors = new[] { "An error occurred while fetching products.", ex.Message } });
             }
         }
+
     
         [HttpGet("{id}")]
         public async Task<ActionResult> GetProductDetails([FromRoute]int id)
@@ -121,5 +130,64 @@ namespace PetHospitalApi.Areas.Customer.Controllers
 
 
 
+        // Existing methods here...
+
+        /// <summary>
+        /// Book a new appointment
+        /// </summary>
+        [HttpPost("appointments")]
+        public async Task<ActionResult<AppointmentResponse>> CreateAppointment([FromBody] AppointmentRequest request)
+        {
+            try
+            {
+                if (request == null || string.IsNullOrEmpty(request.UserId) || request.PetId <= 0 || string.IsNullOrEmpty(request.VetId))
+                {
+                    return BadRequest(new { Errors = new[] { "Invalid appointment data." } });
+                }
+
+                // Default status if not provided
+                request.Status ??= "Pending";
+                request.DateTime ??= DateTime.UtcNow.AddDays(1);
+
+                var appointment = await _appointmentRepository.CreateAsync(request.Adapt<Appointment>());
+
+                _logger.LogInformation("Appointment created for User {UserId} with Vet {VetId} at {DateTime}", request.UserId, request.VetId, request.DateTime);
+
+                return Ok(appointment);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating appointment for user {UserId}: {Message}", request.UserId, ex.Message);
+                return StatusCode(500, new { Errors = new[] { "An error occurred while creating the appointment.", ex.Message } });
+            }
+        }
+
+        /// <summary>
+        /// Get all appointments for a user
+        /// </summary>
+        [HttpGet("appointments/{userId}")]
+        public async Task<ActionResult<IEnumerable<AppointmentResponse>>> GetAppointments(string userId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return BadRequest(new { Errors = new[] { "UserId is required." } });
+                }
+
+                var appointments = await _appointmentRepository.GetOneAsync(e=>e.UserId==userId);
+
+                _logger.LogInformation("Retrieved {Count} appointments for User {UserId}", appointments?.AppointmentId.InList().Count() ?? 0, userId);
+
+                return Ok(appointments);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching appointments for user {UserId}: {Message}", userId, ex.Message);
+                return StatusCode(500, new { Errors = new[] { "An error occurred while fetching appointments.", ex.Message } });
+            }
+        }
     }
 }
+
+   

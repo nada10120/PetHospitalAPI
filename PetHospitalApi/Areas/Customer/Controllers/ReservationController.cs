@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.DTOs.Request;
 using Models.DTOs.Response;
@@ -109,14 +110,22 @@ namespace PetHospitalApi.Areas.Customer.Controllers
 
 
         }
-        [HttpGet("GetAllReservations")]
-        public async Task<IActionResult> GetAllReservations()
+        [HttpGet("GetAllReservations/{userid}")]
+        public async Task<IActionResult> GetAllReservations([FromRoute]string userid)
         {
-            var appointments = await _appointmentRepository.GetAsync();
+            var appointments = await _appointmentRepository.GetAsync(
+                a => a.UserId.Trim().ToLower() == userid.Trim().ToLower()
+            );
             if (appointments == null || !appointments.Any())
             {
                 return NotFound("No reservations found.");
             }
+            Console.WriteLine($"FromRoute: {userid}");
+            foreach (var a in appointments)
+            {
+                Console.WriteLine($"FromDB: {a.UserId}");
+            }
+
             return Ok(appointments.Adapt<IEnumerable<AppointmentResponse>>());
         }
         [HttpGet("GetReservationById/{id}")]

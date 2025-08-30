@@ -13,7 +13,8 @@ namespace Models.DTOs.Request
         public int PetId { get; set; }
         public string VetId { get; set; }
         public string Status { get; set; }
-
         public DateTime? DateTime { get; set; }
+        public int ServiceId { get; set; }    // هنا
     }
+
 }

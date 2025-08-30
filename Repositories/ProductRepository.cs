@@ -36,13 +36,18 @@ namespace Repositories
 
                 if (!string.IsNullOrEmpty(filterItems.Search))
                 {
-                    query = query.Where(p => p.Name.Contains(filterItems.Search, StringComparison.OrdinalIgnoreCase));
+                    query = query.Where(p => p.Name.ToLower().Contains(filterItems.Search.ToLower()));
                 }
 
                 if (!string.IsNullOrEmpty(filterItems.ProductName))
                 {
-                    query = query.Where(p => p.Name.Contains(filterItems.ProductName, StringComparison.OrdinalIgnoreCase));
+                    // If you want exact match
+                    query = query.Where(p => p.Name.ToLower().Contains(filterItems.ProductName.ToLower()));
+
+                    // Or for partial match similar to Search:
+                    // query = query.Where(p => EF.Functions.Like(p.Name, $"%{filterItems.ProductName}%"));
                 }
+
 
                 if (filterItems.MinPrice.HasValue)
                 {
@@ -88,13 +93,16 @@ namespace Repositories
 
                 if (!string.IsNullOrEmpty(filterItems.Search))
                 {
-                    query = query.Where(p => p.Name.Contains(filterItems.Search, StringComparison.OrdinalIgnoreCase));
+                    var search = filterItems.Search.ToLower();
+                    query = query.Where(p => p.Name.ToLower().Contains(search));
                 }
 
                 if (!string.IsNullOrEmpty(filterItems.ProductName))
                 {
-                    query = query.Where(p => p.Name.Contains(filterItems.ProductName, StringComparison.OrdinalIgnoreCase));
+                    var productName = filterItems.ProductName.ToLower();
+                    query = query.Where(p => p.Name.ToLower().Contains(productName));
                 }
+
 
                 if (filterItems.MinPrice.HasValue)
                 {

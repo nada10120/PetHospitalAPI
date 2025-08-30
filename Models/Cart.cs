@@ -1,22 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models
 {
     public class Cart
     {
         [Key]
-        public string ApplicationUserId { get; set; } = null!;
+        public int CartId { get; set; }   // مفتاح أساسي
 
-        public int ProductId { get; set; }
+        [Required]
+        public string ApplicationUserId { get; set; } = null!; // المستخدم صاحب السلة
+
+        [Required]
+        public int ProductId { get; set; } // المنتج
         public Product Product { get; set; } = null!;
 
-        [MinLength(1)]
+        [Range(1, int.MaxValue)]
         public int Count { get; set; }
     }
 }

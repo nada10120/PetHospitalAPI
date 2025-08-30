@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -13,6 +14,6 @@ namespace Models.DTOs.Request
         public string UserId { get; set; }
         [Required]
         public string Content { get; set; }
-        public string MediaUrl { get; set; }
+        public IFormFile? MediaUrl { get; set; }
     }
 }

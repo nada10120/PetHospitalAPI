@@ -14,6 +14,8 @@ namespace Models.DTOs.Response
         public string UserId { get; set; }
         [Required]
         public string Content { get; set; }
+
+        public string UserName { get; set; }
         public DateTime CreatedAt { get; set; }
 
         public int PostId { get; set; }

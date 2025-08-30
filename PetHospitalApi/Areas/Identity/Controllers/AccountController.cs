@@ -6,9 +6,11 @@ using Models;
 using Utility;
 using Models.DTOs.Request;
 using Mapster;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Identity.Data;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using ECommerce513.Models.ViewModels;
 
 namespace PetHospitalApi.Areas.Identity.Controllers
@@ -20,23 +22,24 @@ namespace PetHospitalApi.Areas.Identity.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IConfiguration _configuration;
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IEmailSender emailSender, RoleManager<IdentityRole> roleManager)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IEmailSender emailSender, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _configuration = configuration;
             _signInManager = signInManager;
             _emailSender = emailSender;
         }
-
         [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterRequests registerRequest)
         {
             User applicationUser = registerRequest.Adapt<User>();
+            applicationUser.Role = SD.Client;
             var result = await _userManager.CreateAsync(applicationUser, registerRequest.Password);
-
             if (result.Succeeded)
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
@@ -44,52 +47,66 @@ namespace PetHospitalApi.Areas.Identity.Controllers
                 Console.WriteLine($"Generated Confirmation Link: {confirmationLink}");
                 await _emailSender.SendEmailAsync(registerRequest.Email, "Confirm Your Account", $"Please Confirm Your Account By Clicking <a href='{confirmationLink}'>Here</a>");
                 Console.WriteLine($"Confirmation Link: {confirmationLink}");
-                
                 await _userManager.AddToRoleAsync(applicationUser, SD.Client);
                 return Ok(new { Message = "User created successfully, please check your email to confirm your account." });
             }
             return BadRequest(result.Errors);
         }
-
-        [HttpPost("Login")]
-        public async Task<IActionResult> Login(LoginRequests loginRequest)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest model)
         {
-            var applicationUser = await _userManager.FindByEmailAsync(loginRequest.EmailOrUserName);
-            if (applicationUser is null)
+            try
             {
-                applicationUser = await _userManager.FindByNameAsync(loginRequest.EmailOrUserName);
-            }
-            ModelStateDictionary keyValuePairs = new ModelStateDictionary();
-
-            if (applicationUser is not null)
-            {
-                if (applicationUser.LockoutEnabled)
+                Console.WriteLine($"Login attempt for email: {model.Email}");
+                Console.WriteLine($"Jwt:Key used: {_configuration["Jwt:Key"]}");
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null)
                 {
-                    var result = await _userManager.CheckPasswordAsync(applicationUser, loginRequest.Password);
-                    if (result)
-                    {
-                        await _signInManager.SignInAsync(applicationUser, loginRequest.RememberMe);
-                        return Ok(new { Message = "User Logged in successfully" });
-                    }
-                    else
-                    {
-                        keyValuePairs.AddModelError("EmailOrUserName", "Invalid Email Or User Name");
-                        keyValuePairs.AddModelError("Password", "Invalid Password");
-                    }
+                    Console.WriteLine($"User with email {model.Email} not found.");
+                    return Unauthorized(new { message = "Invalid email or password." });
                 }
-                else
+                var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+                if (!result.Succeeded)
                 {
-                    keyValuePairs.AddModelError(string.Empty, $"You Have Block Until {applicationUser.LockoutEnd}");
+                    Console.WriteLine($"Invalid password for user {model.Email}.");
+                    return Unauthorized(new { message = "Invalid email or password." });
                 }
+                var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                };
+                var roles = await _userManager.GetRolesAsync(user);
+                foreach (var role in roles)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, role));
+                }
+                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                var token = new JwtSecurityToken(
+                    issuer: _configuration["Jwt:Issuer"],
+                    audience: _configuration["Jwt:Audience"],
+                    expires: DateTime.Now.AddHours(3),
+                    claims: authClaims,
+                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                );
+                var response = new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(token),
+                    expiration = token.ValidTo,
+                    userId = user.Id,
+                    role = roles.FirstOrDefault() ?? "Customer",
+                    UserName = user.UserName
+                };
+                Console.WriteLine($"Login successful for userId: {user.Id}, role: {response.role}");
+                return Ok(response);
             }
-            else
+            catch (Exception ex)
             {
-                keyValuePairs.AddModelError("EmailOrUserName", "Invalid Email Or User Name");
-                keyValuePairs.AddModelError("Password", "Invalid Password");
+                Console.WriteLine($"Error in Login: {ex.Message}\nStackTrace: {ex.StackTrace}");
+                return StatusCode(500, new { message = "An error occurred during login." });
             }
-            return BadRequest(keyValuePairs);
         }
-
         [HttpPost("Logout")]
         public async Task<IActionResult> Logout()
         {
@@ -118,38 +135,30 @@ namespace PetHospitalApi.Areas.Identity.Controllers
                 return NotFound();
             }
         }
+
         [HttpPost("ResendEmail")]
         public async Task<IActionResult> ResendEmail(ResendEmailRequest resendEmailrequest)
         {
-          
-
             var applicationUser = await _userManager.FindByEmailAsync(resendEmailrequest.EmailOrUserName);
-
             if (applicationUser is null)
             {
                 applicationUser = await _userManager.FindByNameAsync(resendEmailrequest.EmailOrUserName);
             }
-
             if (applicationUser is not null)
             {
-
                 if (!applicationUser.EmailConfirmed)
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
-
                     var confirmationLink = $"{Request.Scheme}://{Request.Host}/api/Identity/Account/ConfirmEmail?userId={applicationUser.Id}&token={Uri.EscapeDataString(token)}";
                     Console.WriteLine($"Generated Confirmation Link: {confirmationLink}");
                     await _emailSender.SendEmailAsync(applicationUser!.Email, "Confirm Your Account", $"Please Confirm Your Account By Clicking <a href='{confirmationLink}'>Here</a>");
-                    return Ok (new { message = "a confirmation link has been sent to you"});
+                    return Ok(new { message = "a confirmation link has been sent to you" });
                 }
                 else
                 {
-
-                    return Ok( new { message = "your email is already confirmed" });
+                    return Ok(new { message = "your email is already confirmed" });
                 }
-
             }
-
             return NotFound("Invalid Email Or User Name");
         }
 
@@ -157,12 +166,10 @@ namespace PetHospitalApi.Areas.Identity.Controllers
         public async Task<IActionResult> ForgetPassword(ForgetPasswordRequest forgetPasswordRequest)
         {
             var applicationUser = await _userManager.FindByEmailAsync(forgetPasswordRequest.EmailOrUserName);
-
             if (applicationUser is null)
             {
                 applicationUser = await _userManager.FindByNameAsync(forgetPasswordRequest.EmailOrUserName);
             }
-
             if (applicationUser is not null)
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(applicationUser);
@@ -175,33 +182,23 @@ namespace PetHospitalApi.Areas.Identity.Controllers
             return BadRequest("Invalid email or username");
         }
 
-
-
-
         [HttpPost("ConfirmResetPassword")]
         public async Task<IActionResult> ConfirmResetPassword(ResetPasswordRequests resetPasswordRequest)
         {
-            
             var applicationUser = await _userManager.FindByEmailAsync(resetPasswordRequest.Email);
-
             if (applicationUser != null && applicationUser.Id == resetPasswordRequest.UserId)
             {
                 var result = await _userManager.ResetPasswordAsync(applicationUser, resetPasswordRequest.Token, resetPasswordRequest.Password);
-
                 if (result.Succeeded)
                 {
                     await _emailSender.SendEmailAsync(resetPasswordRequest.Email, "Reset Password Successfully", $"Reset Password Successfully");
-
-
                     return NoContent();
                 }
                 else
                 {
-                    
                     return BadRequest(result.Errors);
                 }
             }
-
             return NotFound("Invalid Email");
         }
     }
